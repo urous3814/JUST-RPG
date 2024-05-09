@@ -9,6 +9,7 @@ typedef struct game {
 
 gameType game = { MAIN_MENU, 0 };
 gameType pGame = { MAIN_MENU, 0 };
+gameType exGame = { MAIN_MENU, 0 };
 
 int main() {
 
@@ -25,6 +26,7 @@ int main() {
 	while (1) {
         if(pGame.gameStatus != game.gameStatus)
         {
+            exGame = pGame;
             switch (game.gameStatus) {
             case MAIN_MENU:
                 printStartPage(game.nowMenuIndx);
@@ -102,6 +104,7 @@ int main() {
                     switch (game.nowMenuIndx) {
                     case 0:
                         game.gameStatus = MAKE_MAP;
+                        game.nowMenuIndx = 0;
                         break;
                     case 1:
                         eraseAskModal();
@@ -112,6 +115,26 @@ int main() {
                     default:
                         break;
                     }
+                }
+            }
+            else if(ch == BACKSPACE)
+            {
+                if(game.gameStatus == ASK_NEW)
+                {
+                    eraseAskModal();
+                    game.gameStatus = MAIN_MENU;
+                    pGame.gameStatus = MAIN_MENU;
+                    game.nowMenuIndx = 0;
+                }
+                else if(game.gameStatus == MAKE_MAP)
+                {
+                    game.gameStatus = MAIN_MENU;
+                    game.nowMenuIndx = 0;
+                }
+                else if(game.gameStatus == SETTING)
+                {
+                    game.gameStatus = MAIN_MENU;
+                    game.nowMenuIndx = 0;
                 }
             }
 			//

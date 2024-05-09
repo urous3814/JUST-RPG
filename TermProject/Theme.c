@@ -6,6 +6,10 @@ void printStartPage(int nowIndx){
     printLogo(25, 10);
     draw_boxL(0, 0, 120, 46);
     draw_boxL(80, 30, 116, 42);
+    gotoxy(5, 43);
+    printf("Made By UROUS3814");
+    gotoxy(5, 44);
+    printf("github.com/urous3814/TermProject");
     printFirstMenu(nowIndx);
 }
 

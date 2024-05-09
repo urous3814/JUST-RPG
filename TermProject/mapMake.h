@@ -53,6 +53,7 @@
 // 커맨드 정의
 #define ESC 0x1b //  ESC 누르면 종료
 #define ENTER 0x0d // Enter 누르면 선택
+#define BACKSPACE 0x08 // Backspace 누르면 이전 메뉴로
 #define SPECIAL1 0xe0 // 특수키는 0xe0 + key 값으로 구성된다.
 #define SPECIAL2 0x00 // keypad 경우 0x00 + key 로 구성된다.
 

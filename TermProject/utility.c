@@ -3,16 +3,16 @@
 void setup()
 {
     COORD coord;
-    coord.X = 122; // 가로 길이
-    coord.Y = 48;  // 세로 길이
+    coord.X = 123; // 가로 길이
+    coord.Y = 47;  // 세로 길이
     SMALL_RECT Rect;
     Rect.Top = 0;
     Rect.Left = 0;
-    Rect.Bottom = coord.Y - 1;
-    Rect.Right = coord.X - 1;
+    Rect.Bottom = 47;
+    Rect.Right = 123;
     HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE); // 콘솔 핸들
-    SetConsoleScreenBufferSize(Handle, coord);        // 버퍼 크기 설정
     SetConsoleWindowInfo(Handle, TRUE, &Rect);       // 창 크기 설정
+    SetConsoleScreenBufferSize(Handle, coord);        // 버퍼 크기 설정
 
     // 콘솔 제목 설정
     char* euc_kr_title = "JUST RPG";
@@ -109,7 +109,7 @@ void draw_boxL(int x1, int y1, int x2, int y2)
     printf("└");
     gotoxy(x2, y2);
     printf("┘");
-    for (x = x1 + 2; x <= x2-1; x+=2) {
+    for (x = x1 + 2; x < x2-1; x+=2) {
         gotoxy(x, y1);
         printf("─");
         gotoxy(x, y2);

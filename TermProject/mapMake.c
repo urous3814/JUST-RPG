@@ -1,5 +1,8 @@
 #include "mapMake.h"
 
+
+int roomCount = 0;
+
 void initializeDungeon() {
     for (int i = 0; i < MAP_SIZE; ++i) {
         for (int j = 0; j < MAP_SIZE; ++j) {
@@ -7,6 +10,7 @@ void initializeDungeon() {
         }
         map[i][MAP_SIZE] = '\0';
     }
+    roomCount = 0;
 }
 
 void divideSpace(SpaceTree* node, int n) {
@@ -43,7 +47,6 @@ void divideSpace(SpaceTree* node, int n) {
     divideSpace(node->right, n + 1);
 }
 
-int roomCount = 0;
 const int roomPercent[6] = { 10, 50, 0, 5, 10, 20 };
 
 void drawRoom(roomType room) {

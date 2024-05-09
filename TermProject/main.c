@@ -103,8 +103,8 @@ int main() {
                 {
                     switch (game.nowMenuIndx) {
                     case 0:
-                        game.gameStatus = MAKE_MAP;
                         game.nowMenuIndx = 0;
+                        game.gameStatus = MAKE_MAP;
                         break;
                     case 1:
                         eraseAskModal();
@@ -178,16 +178,22 @@ int main() {
                     switch (ch) {
                     case UP:
                         if(game.nowMenuIndx > 0)
-                            game.nowMenuIndx-=5;
+                        {
+                            game.nowMenuIndx -= 5;
+                            printMapStr(game.nowMenuIndx);
+                        }
                         break;
                     case DOWN:
                         if(game.nowMenuIndx < 70)
-                            game.nowMenuIndx+=5;
+                        {
+                            game.nowMenuIndx += 5;
+                            printMapStr(game.nowMenuIndx);
+                        }
                         break;
                     default:
                         break;
                     }
-                    printMapStr(game.nowMenuIndx);
+                    
                 }
 				switch (ch) {
 				case UP:

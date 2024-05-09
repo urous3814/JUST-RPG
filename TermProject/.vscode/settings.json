@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "mapmake.h": "c"
-    }
+    },
+    "files.encoding": "euckr"
 }

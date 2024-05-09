@@ -126,7 +126,7 @@ void generateRoad(SpaceTree* node, int n)
     generateRoad(node->right, n + 1);
 }
 
-void generateDungeon() {
+void generateDungeon(int seed) {
     SpaceTree* root = (SpaceTree*)malloc(sizeof(SpaceTree));
     spaceType* space = (spaceType*)malloc(sizeof(spaceType));
     space->x = 0;
@@ -134,6 +134,7 @@ void generateDungeon() {
     space->width = MAP_SIZE;
     space->height = MAP_SIZE;
     root->space = *space;
+    srand(seed);
     initializeDungeon();
     divideSpace(root, 0);
     createRoom(root, 0);

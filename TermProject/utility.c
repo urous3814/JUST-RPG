@@ -1,5 +1,53 @@
 #include "mapMake.h"
 
+void setup()
+{
+    COORD coord;
+    coord.X = 122; // 가로 길이
+    coord.Y = 48;  // 세로 길이
+    SMALL_RECT Rect;
+    Rect.Top = 0;
+    Rect.Left = 0;
+    Rect.Bottom = coord.Y - 1;
+    Rect.Right = coord.X - 1;
+    HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE); // 콘솔 핸들
+    SetConsoleScreenBufferSize(Handle, coord);        // 버퍼 크기 설정
+    SetConsoleWindowInfo(Handle, TRUE, &Rect);       // 창 크기 설정
+
+    // 콘솔 제목 설정
+    char* euc_kr_title = "JUST RPG";
+
+    // EUC-KR 문자열 길이
+    int euc_kr_len = strlen(euc_kr_title);
+
+    // Unicode 버퍼 크기 계산
+    int unicode_len = MultiByteToWideChar(CP_ACP, 0, euc_kr_title, euc_kr_len, NULL, 0);
+
+    // Unicode 버퍼 동적 할당
+    wchar_t* unicode_title = (wchar_t*)malloc((unicode_len + 1) * sizeof(wchar_t));
+
+    // EUC-KR 문자열을 Unicode로 변환
+    MultiByteToWideChar(CP_ACP, 0, euc_kr_title, euc_kr_len, unicode_title, unicode_len);
+    unicode_title[unicode_len] = L'\0'; // Null 종결 문자 추가
+
+    // 콘솔 제목 설정
+    SetConsoleTitle(unicode_title);
+
+    // 메모리 해제
+    free(unicode_title);
+
+    // 글꼴 크기 설정
+    CONSOLE_FONT_INFOEX fontInfo;
+    fontInfo.cbSize = sizeof(fontInfo);
+    fontInfo.nFont = 0;
+    fontInfo.dwFontSize.X = 10; // 가로 글꼴 크기
+    fontInfo.dwFontSize.Y = 20; // 세로 글꼴 크기
+    fontInfo.FontFamily = FF_DONTCARE;
+    fontInfo.FontWeight = FW_NORMAL;
+    wcscpy(fontInfo.FaceName, L"Terminal"); // 레스터 글꼴 이름
+    SetCurrentConsoleFontEx(Handle, FALSE, &fontInfo);
+}
+
 int randint(int min, int max) {
     return rand() % (max - min + 1) + min;
 }

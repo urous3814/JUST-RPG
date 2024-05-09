@@ -80,9 +80,11 @@ void printMakeMapPage(){
     printf("맵 생 성");
     draw_boxL(90, 7, 110, 9);
     gotoxy(92, 8);
-    printf("시드: ");
+    srand(time(NULL));
+    int seed = rand() % 10000;
+    printf("시드: %d", seed);
     draw_boxL(8, 13, 112, 44);
-    generateDungeon();
+    generateDungeon(seed);
     printMapStr(0);
 }
 

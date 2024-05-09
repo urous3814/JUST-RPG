@@ -12,6 +12,7 @@ gameType pGame = { MAIN_MENU, 0 };
 
 int main() {
 
+    setup();
     unsigned char ch;
     removeCursor();
     if(game.gameStatus == MAIN_MENU)

@@ -78,6 +78,14 @@ void removeCursor(void) { // 커서를 안보이게 한다
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
 }
 
+void showCursor(void){ // 커서를 안보이게 한다
+
+	CONSOLE_CURSOR_INFO curInfo;
+	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
+	curInfo.bVisible=1;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
+}
+
 void gotoxy(int x, int y) //내가 원하는 위치로 커서 이동
 {
 	COORD pos = { x, y };

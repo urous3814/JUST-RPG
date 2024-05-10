@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "mapMake.h"
 
-enum gameStatus { MAIN_MENU, ASK_NEW, SETTING, MAKE_MAP, GAME_START, GAME_OVER, GAME_CLEAR };
+enum gameStatus { MAIN_MENU, ASK_NEW, SETTING, MAKE_MAP, MAKE_MAP_EXPLORE, MAKE_MAP_SEED, GAME_START, GAME_OVER, GAME_CLEAR };
 typedef struct game {
     int gameStatus;
     int nowMenuIndx;
@@ -10,17 +10,14 @@ typedef struct game {
 gameType game = { MAIN_MENU, 0 };
 gameType pGame = { MAIN_MENU, 0 };
 gameType exGame = { MAIN_MENU, 0 };
+int customSeed = 0;
 
 int main() {
 
     setup();
     unsigned char ch;
     removeCursor();
-    if(game.gameStatus == MAIN_MENU)
-    {   
-        printStartPage(game.nowMenuIndx);
-    }
-    //generateDungeon();
+    printStartPage(game.nowMenuIndx);
 
 
 	while (1) {
@@ -38,7 +35,7 @@ int main() {
                 printSettingPage(game.nowMenuIndx);
                 break;
             case MAKE_MAP:
-                printMakeMapPage();
+                printMakeMapPage(game.nowMenuIndx);
                 break;
             case GAME_START:
                 break;
@@ -116,6 +113,41 @@ int main() {
                         break;
                     }
                 }
+                else if(game.gameStatus == MAKE_MAP)
+                {
+                    switch (game.nowMenuIndx) {
+                    case 0:
+                        game.gameStatus = MAKE_MAP_EXPLORE;
+                        game.nowMenuIndx = 0;
+                        pGame = game;
+                        break;
+                    case 1:
+                        gotoxy(98, 6);
+                        printf("    ");
+                        gotoxy(98, 6);
+                        showCursor();
+                        scanf("%d", &customSeed); 
+                        removeCursor();
+                        generateDungeon(customSeed);
+                        printMapStr(0);
+                        break;
+                    case 2:
+                        game.gameStatus = MAKE_MAP_EXPLORE;
+                        break;
+                    case 3:
+                        game.gameStatus = MAIN_MENU;
+                        game.nowMenuIndx = 0;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                else if (game.gameStatus == MAKE_MAP_EXPLORE)
+                {
+                    game.gameStatus = MAKE_MAP;
+                    game.nowMenuIndx = 0;
+                    pGame = game;
+                }
             }
             else if(ch == BACKSPACE)
             {
@@ -136,9 +168,14 @@ int main() {
                     game.gameStatus = MAIN_MENU;
                     game.nowMenuIndx = 0;
                 }
-            }
-			//
-			if (ch == SPECIAL1 || ch == SPECIAL2) { // 만약 특수키
+                else if (game.gameStatus == MAKE_MAP_EXPLORE)
+                {
+                    game.gameStatus = MAKE_MAP;
+                    game.nowMenuIndx = 0;
+                    pGame = game;
+                }
+                
+            } else if (ch == SPECIAL1 || ch == SPECIAL2) { // 만약 특수키
 				// 예를 들어 UP key의 경우 0xe0 0x48 두개의 문자가 들어온다.
 				ch = getch();
                 if(game.gameStatus == MAIN_MENU)
@@ -173,7 +210,7 @@ int main() {
                     }
                     printAskModalYN(game.nowMenuIndx);
                 }
-                else if(game.gameStatus == MAKE_MAP)
+                else if(game.gameStatus == MAKE_MAP_EXPLORE)
                 {
                     switch (ch) {
                     case UP:
@@ -193,17 +230,26 @@ int main() {
                     default:
                         break;
                     }
-                    
                 }
-				switch (ch) {
-				case UP:
-				case DOWN:
-				case LEFT:
-				case RIGHT:
-					break;
-				default: // 방향키가 아니면 멈춘다
-					break;
-				}
+                else if(game.gameStatus == MAKE_MAP)
+                    switch (ch) {
+                    case LEFT:
+                        if(game.nowMenuIndx > 0)
+                        {
+                            game.nowMenuIndx -= 1;
+                            printMapMakeMenu(game.nowMenuIndx);
+                        }
+                        break;
+                    case RIGHT:
+                        if(game.nowMenuIndx < 3)
+                        {
+                            game.nowMenuIndx += 1;
+                            printMapMakeMenu(game.nowMenuIndx);
+                        }
+                        break;
+                    default: // 방향키가 아니면 멈춘다
+                        break;
+				    }
 			}
 			else {
 				// 특수 문자가 아니지만 AWSD를 방향키 대신 사용하는 경우 처리

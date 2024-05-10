@@ -68,28 +68,54 @@ void eraseAskModal(){
 
 void printMapStr(int y)
 {
-    gotoxy(11, 14);
+    gotoxy(11, 10);
     for(int i = 0; i < 30; i++)
     {
         printf("%s", map[i + y]);
-        gotoxy(11, 15 + i);
+        gotoxy(11, 11 + i);
     }
 }
 
-void printMakeMapPage(){
+void printMenuItemSimple(int x, int y, int color, char* text){
+    if(color == 0)
+        textcolor(BLACK, WHITE);
+    else
+        textcolor(WHITE, BLACK);
+    gotoxy(x, y);
+    printf("%s", text);
+}
+
+char* mapMakeMenu[4] = { "   둘러보기   ", "   시드변경   ", "   맵  확정   ", "   뒤로가기   "};
+void printMapMakeMenu(int nowIndx){
+    for(int i = 0; i < 4; i++)
+    {
+        if(i == nowIndx)
+            printMenuItemSimple(14 + i * 26, 42, 0, mapMakeMenu[i]);
+        else
+            printMenuItemSimple(14 + i * 26, 42, 1, mapMakeMenu[i]);
+    }
+    textcolor(WHITE, BLACK);
+}
+
+
+void printMakeMapPage(int nowIndx){
     cls(0, 15);
-    draw_boxB(6, 5, 114, 45);
-    draw_boxL(8, 6, 112, 10);
-    gotoxy(57, 8);
+    draw_boxB(6, 3, 114, 45);
+    draw_boxL(8, 4, 112, 8);
+    gotoxy(57, 6);
     printf("맵 생 성");
-    draw_boxL(90, 7, 110, 9);
-    gotoxy(92, 8);
+    draw_boxL(90, 5, 110, 7);
+    gotoxy(92, 6);
     srand(time(NULL));
     int seed = rand() % 10000;
     printf("시드: %d", seed);
-    draw_boxL(8, 13, 112, 44);
+    draw_boxL(8, 9, 112, 40);
+    draw_boxL(8, 41, 112, 43);
+    printMapMakeMenu(nowIndx);
     generateDungeon(seed);
     printMapStr(0);
+    //112 - 8 = 104 / 4 = 26
+    //맵 둘러보기 | 시드 변경 | 맵 확정 | 뒤로가기
 }
 
 

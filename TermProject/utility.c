@@ -11,6 +11,19 @@ void setup()
     Rect.Bottom = 47;
     Rect.Right = 123;
     HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE); // 콘솔 핸들
+
+    // 글꼴 크기 설정
+    CONSOLE_FONT_INFOEX fontInfo;
+    fontInfo.cbSize = sizeof(fontInfo);
+    fontInfo.nFont = 0;
+    fontInfo.dwFontSize.X = 8; // 가로 글꼴 크기
+    fontInfo.dwFontSize.Y = 16; // 세로 글꼴 크기
+    fontInfo.FontFamily = FF_DONTCARE;
+    fontInfo.FontWeight = FW_NORMAL;
+    wcscpy(fontInfo.FaceName, L"Terminal"); // 레스터 글꼴 이름
+    SetCurrentConsoleFontEx(Handle, FALSE, &fontInfo);
+
+
     SetConsoleWindowInfo(Handle, TRUE, &Rect);       // 창 크기 설정
     SetConsoleScreenBufferSize(Handle, coord);        // 버퍼 크기 설정
 
@@ -35,17 +48,6 @@ void setup()
 
     // 메모리 해제
     free(unicode_title);
-
-    // 글꼴 크기 설정
-    CONSOLE_FONT_INFOEX fontInfo;
-    fontInfo.cbSize = sizeof(fontInfo);
-    fontInfo.nFont = 0;
-    fontInfo.dwFontSize.X = 10; // 가로 글꼴 크기
-    fontInfo.dwFontSize.Y = 20; // 세로 글꼴 크기
-    fontInfo.FontFamily = FF_DONTCARE;
-    fontInfo.FontWeight = FW_NORMAL;
-    wcscpy(fontInfo.FaceName, L"Terminal"); // 레스터 글꼴 이름
-    SetCurrentConsoleFontEx(Handle, FALSE, &fontInfo);
 }
 
 int randint(int min, int max) {

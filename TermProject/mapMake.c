@@ -77,6 +77,144 @@ void drawRoom(roomType room) {
     }
 }
 
+
+
+objectType* makeMonsterObject(enum monEnum monType)
+{   
+    objectType* monster = (objectType*)malloc(sizeof(objectType));
+    switch (monType)
+    {
+    case NormalM:
+        monster->objectType = objMONSTER;
+        monster->level = randint(1, 3);
+        monster->hp = randint(10, 15) * monster->level;
+        monster->atk = randint(1, 2) * monster->level;
+        monster->def = randint(1, 2) * monster->level;
+        monster->gold = randint(1, 3) * monster->level;
+        monster->exp = randint(1, 3) * monster->level;
+        monster->item = NULL;
+        break;
+    case EliteM:
+        monster->objectType = objELITE;
+        monster->level = randint(3, 5);
+        monster->hp = randint(15, 20) * monster->level;
+        monster->atk = randint(1, 2) * monster->level;
+        monster->def = randint(1, 2) * monster->level;
+        monster->gold = randint(1, 3) * monster->level;
+        monster->exp = randint(1, 3) * monster->level;
+        monster->item = NULL;
+        break;
+    case BossM:
+        monster->objectType = objBOSS;
+        monster->level = randint(10, 15);
+        monster->hp = randint(15, 20) * monster->level;
+        monster->atk = randint(3, 5) * monster->level;
+        monster->def = randint(3, 5) * monster->level;
+        monster->gold = randint(3, 5) * monster->level;
+        monster->exp = randint(10, 20) * monster->level;
+        monster->item = NULL;
+        break;
+
+    default:
+        break;
+    }
+    return monster;
+}
+
+void addMonsterObject(roomType room) {
+    //난이도 가져오기
+    int mobCount = randint(4, 4 + 3 * difficulty);
+    for (int i = 0; i < mobCount; i++) {
+        int x = randint(room.x, room.x + room.width);
+        int y = randint(room.y, room.y + room.height);
+        zLayer[x][y].type = objMONSTER;
+        zLayer[x][y].object = makeMonsterObject(0);
+    }
+}
+
+objectType* makeTreasureObject()
+{
+    objectType* treasure = (objectType*)malloc(sizeof(objectType));
+    treasure->objectType = objTREASURE;
+    treasure->level = randint(1, 3);
+    treasure->hp = 0;
+    treasure->atk = 0;
+    treasure->def = 0;
+    treasure->gold = randint(5, 10) * treasure->level;
+    treasure->exp = randint(5, 10) * treasure->level;
+    treasure->item = NULL;
+    return treasure;
+}
+
+objectType* makeMimicObject()
+{
+    objectType* treasure = (objectType*)malloc(sizeof(objectType));
+    treasure->objectType = objTREASURE;
+    treasure->level = randint(1, 3);
+    treasure->hp = 0;
+    treasure->atk = randint(3, 6) * treasure->level;
+    treasure->def = 0;
+    treasure->gold = 0;
+    treasure->exp = 0;
+    treasure->item = NULL;
+    return treasure;
+}
+
+
+//방에 있는 요소들을 추가한다
+void addRoomObject(roomType room) {
+    //몹 추가하기
+    addMonsterObject(room);
+
+    //유형별 특별 오브젝트 추가하기
+    switch (room.type)
+    {
+    case Treasure:
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].type = objTREASURE;
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].object = makeTreasureObject();
+        break;
+    case Mimic:
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].type = objTREASURE;
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].object = makeTreasureObject();
+        break;
+    case Boss:
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].type = objBOSS;
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].object = makeMonsterObject(2);
+        break;
+    case Elite:
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].type = objELITE;
+        zLayer[room.x + room.width / 2][room.y + room.height / 2].object = makeMonsterObject(1);
+        break;
+    default:
+        break;
+    }
+}
+
+void mapComplete()
+{
+    //1단계 맵 확장
+
+    for (int i = 0; i < MAP_SIZE; i++)
+    {
+        for (int j = 0; j < MAP_SIZE; j++)
+        {
+            for (int x = 0; x < 2; x++)
+            {
+                for (int y = 0; y < 2; y++)
+                {
+                    mapExpand[i * 2 + x][j * 2 + y] = map[i][j];
+                }
+            }
+        }
+    }
+    //2단계 오브젝트 배치
+    for (int i = 0; i < MAX_ROOM; i++)
+    {
+        addRoomObject(rooms[i]);
+    }
+}
+
+
 void createRoom(SpaceTree* node, int n) {
     if (n == MAX_NODE) {
         int width = randint(node->space.width / 3 * 2, node->space.width - 2);

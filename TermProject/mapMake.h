@@ -75,7 +75,7 @@ typedef struct room {
     int y;
     int width;
     int height;
-    int type;
+    enum roomList type;
 } roomType;
 
 typedef struct space {
@@ -91,35 +91,84 @@ typedef struct spaceTree {
     struct spaceTree* left;
     struct spaceTree* right;
 } SpaceTree;
-//makeMap.c
-void initializeDungeon();
-void divideSpace(SpaceTree* node, int n);
-void createRoom(SpaceTree* node, int n);
-void drawRoom(roomType room);
-void drawMap();
-void generateRoad(SpaceTree* node, int n);
-void generateDungeon();
-int randint(int min, int max);
-int randPer(int length, int* percent);
+
+typedef struct item {
+    int itemIndx;
+    char name[20];
+} itemType;
+
+typedef struct object {
+    enum objectEnum objectType;
+    int hp;
+    int atk;
+    int def;
+    int gold;
+    int exp;
+    int level;
+    itemType* item;
+} objectType;
+
+typedef struct zLayer {
+    int type;
+    objectType* object;
+} zLayerType;
 
 char map[MAP_SIZE][MAP_SIZE+1];
+char mapExpand[MAP_SIZE*2][MAP_SIZE*2+1];
+zLayerType zLayer[MAP_SIZE][MAP_SIZE];
 roomType rooms[MAX_ROOM];
 enum roomList { Store, Monster, Boss, Treasure, Mimic, Elite };
+enum objectEnum { objMONSTER, objBOSS, objELITE, objTREASURE, objMIMIC, objSTORE };
+enum monEnum {NormalM, EliteM, BossM};
+int difficulty;
 
-//utility.c
-void removeCursor(void);
+
+/*
+ - z레이어에 element 위치정보 및 타입을 저장한다.
+ - z레이어 기반으로 search하는데 이때 출력은 drawbox로 진행한다.
+ - z레이어에는 object를 저장한다.
+
+
+*/
+void printFirstMenu(int nowIndx);
+void initializeDungeon();
+void printSettingPage(int nowIndx);
+void printMakeMapPage(int nowIndx);
+void printMapStr(int nowIndx);
+void divideSpace(SpaceTree* node, int n);
+void drawRoom(roomType room);
+void drawMap(int x, int y, int width, int height);
+void drawMapExpand(int x, int y, int width, int height);
+objectType* makeMonsterObject(enum monEnum monType);
+objectType* makeObject(enum objectEnum objType);
+objectType* makeTreasureObject();
+objectType* makeMimicObject();
+void makeMap();
+void printMapMakeMenu(int nowIndx);
+void printMenuItemSimple(int x, int y, int color, char* text);
+void printAskModalYN(int nowIndx, int nowStatus);
+void printAskModal(int nowIndx, int nowStatus);
+void eraseAskModal();
+void printMenuItem(int x, int y, int color, char* text);
+void printStartPage(int nowIndx);
+void setup();
+void removeCursor();
 void gotoxy(int x, int y);
-void textcolor(int fg_color, int bg_color);
+void textcolor(int foreground, int background);
 void cls(int bg_color, int text_color);
 void draw_boxL(int x1, int y1, int x2, int y2);
 void draw_boxB(int x1, int y1, int x2, int y2);
+int randint(int min, int max);
+int randPer(int length, int* percent);
+void showCursor(void);
+void addMonsterObject(roomType room);
+void addRoomObject(roomType room);
+void mapComplete();
+void createRoom(SpaceTree* node, int n);
+void generateRoad(SpaceTree* node, int n);
+void generateDungeon(int seed);
 
-//Theme.c
-void printLogo(int x, int y);
-void printFirstMenu();
-void printMenuItem(int x, int y, int color, char* text);
-void printStartPage(int nowIndx);
-void printSettingPage(int nowIndx);
+
 
 
 

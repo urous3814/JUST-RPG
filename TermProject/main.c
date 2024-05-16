@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "mapMake.h"
 
-enum gameStatus { MAIN_MENU, ASK_NEW, SETTING, MAKE_MAP, MAKE_MAP_EXPLORE, MAKE_MAP_SEED, GAME_START, GAME_OVER, GAME_CLEAR };
+enum gameStatus { MAIN_MENU, ASK_NEW, SETTING, MAKE_MAP, MAKE_MAP_EXPLORE, MAKE_MAP_SEED, GAME_SETTING ,GAME_START, GAME_OVER, GAME_CLEAR };
 typedef struct game {
     int gameStatus;
     int nowMenuIndx;
@@ -29,13 +29,19 @@ int main() {
                 printStartPage(game.nowMenuIndx);
                 break;
             case ASK_NEW:
-                printAskModal(game.nowMenuIndx);
+                printAskModal(game.nowMenuIndx, 0);
                 break;
             case SETTING:
                 printSettingPage(game.nowMenuIndx);
                 break;
             case MAKE_MAP:
                 printMakeMapPage(game.nowMenuIndx);
+                break;
+            case MAKE_MAP_EXPLORE:
+                printMapStr(game.nowMenuIndx);
+                break;
+            case GAME_SETTING:
+                printAskModal(game.nowMenuIndx, 1);
                 break;
             case GAME_START:
                 break;
@@ -131,8 +137,8 @@ int main() {
                         generateDungeon(customSeed);
                         printMapStr(0);
                         break;
-                    case 2:
-                        game.gameStatus = MAKE_MAP_EXPLORE;
+                    case 2: //게임 세부설정.
+                        game.gameStatus = GAME_SETTING;
                         break;
                     case 3:
                         game.gameStatus = MAIN_MENU;
@@ -147,6 +153,12 @@ int main() {
                     game.gameStatus = MAKE_MAP;
                     game.nowMenuIndx = 0;
                     pGame = game;
+                }
+                else if(game.gameStatus == GAME_SETTING)
+                {
+                    difficulty = game.nowMenuIndx;
+                    mapComplete();
+
                 }
             }
             else if(ch == BACKSPACE)
@@ -208,7 +220,7 @@ int main() {
                     default:
                         break;
                     }
-                    printAskModalYN(game.nowMenuIndx);
+                    printAskModalYN(game.nowMenuIndx, 0);
                 }
                 else if(game.gameStatus == MAKE_MAP_EXPLORE)
                 {
@@ -250,6 +262,22 @@ int main() {
                     default: // 방향키가 아니면 멈춘다
                         break;
 				    }
+                else if(game.gameStatus == GAME_SETTING)
+                {
+                    switch (ch) {
+                    case LEFT:
+                        if(game.nowMenuIndx > 0)
+                            game.nowMenuIndx--;
+                        break;
+                    case RIGHT:
+                        if(game.nowMenuIndx < 2)
+                            game.nowMenuIndx++;
+                        break;
+                    default:
+                        break;
+                    }
+                    printAskModalYN(game.nowMenuIndx, 1);
+                }
 			}
 			else {
 				// 특수 문자가 아니지만 AWSD를 방향키 대신 사용하는 경우 처리

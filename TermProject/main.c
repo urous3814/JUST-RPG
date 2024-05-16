@@ -13,11 +13,13 @@ gameType exGame = { MAIN_MENU, 0 };
 int customSeed = 0;
 
 int main() {
-
+    
     setup();
+    
     unsigned char ch;
     removeCursor();
     printStartPage(game.nowMenuIndx);
+    Sleep(1000);
 
 
 	while (1) {

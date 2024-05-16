@@ -7,6 +7,9 @@
 #include <conio.h>
 #include <Windows.h>
 #include <time.h>
+#include <stdarg.h>
+#include <string.h>
+
 
 // 게임 설정
 #define DELAY 100

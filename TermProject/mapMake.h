@@ -13,6 +13,9 @@
 
 // 게임 설정
 #define DELAY 100
+#define WIDTH 123
+#define HEIGHT 47
+
 
 // 맵 설정 저장
 #define MAX_NODE 5
@@ -71,6 +74,11 @@
 #define LEFT2	'a'
 #define RIGHT2	'd'
 
+//enum형 정의
+enum roomList { Store, Monster, Boss, Treasure, Mimic, Elite };
+enum objectEnum { objMONSTER, objBOSS, objELITE, objTREASURE, objMIMIC, objSTORE };
+enum monEnum {NormalM, EliteM, BossM};
+
 
 typedef struct room {
     int roomIndx;
@@ -100,8 +108,14 @@ typedef struct item {
     char name[20];
 } itemType;
 
+
+
+
+extern int needSwitch;
+extern int needBackCopy;
+
 typedef struct object {
-    enum objectEnum objectType;
+    enum objectEnum objectTypeEnum;
     int hp;
     int atk;
     int def;
@@ -115,15 +129,15 @@ typedef struct zLayer {
     int type;
     objectType* object;
 } zLayerType;
-
 char map[MAP_SIZE][MAP_SIZE+1];
 char mapExpand[MAP_SIZE*2][MAP_SIZE*2+1];
 zLayerType zLayer[MAP_SIZE][MAP_SIZE];
 roomType rooms[MAX_ROOM];
-enum roomList { Store, Monster, Boss, Treasure, Mimic, Elite };
-enum objectEnum { objMONSTER, objBOSS, objELITE, objTREASURE, objMIMIC, objSTORE };
-enum monEnum {NormalM, EliteM, BossM};
+
 int difficulty;
+
+
+
 
 
 /*
@@ -170,9 +184,17 @@ void mapComplete();
 void createRoom(SpaceTree* node, int n);
 void generateRoad(SpaceTree* node, int n);
 void generateDungeon(int seed);
+void printscr(char* format, ...);
+void scr_init();
+void scr_clear();
+void scr_switch();
+void scr_copy();
+void printGamePage();
+
 
 
 
 
 
 #endif /* MAPMAKE_H */
+

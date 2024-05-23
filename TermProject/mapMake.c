@@ -85,7 +85,7 @@ objectType* makeMonsterObject(enum monEnum monType)
     switch (monType)
     {
     case NormalM:
-        monster->objectType = objMONSTER;
+        monster->objectTypeEnum = objMONSTER;
         monster->level = randint(1, 3);
         monster->hp = randint(10, 15) * monster->level;
         monster->atk = randint(1, 2) * monster->level;
@@ -95,7 +95,7 @@ objectType* makeMonsterObject(enum monEnum monType)
         monster->item = NULL;
         break;
     case EliteM:
-        monster->objectType = objELITE;
+        monster->objectTypeEnum = objELITE;
         monster->level = randint(3, 5);
         monster->hp = randint(15, 20) * monster->level;
         monster->atk = randint(1, 2) * monster->level;
@@ -105,7 +105,7 @@ objectType* makeMonsterObject(enum monEnum monType)
         monster->item = NULL;
         break;
     case BossM:
-        monster->objectType = objBOSS;
+        monster->objectTypeEnum = objBOSS;
         monster->level = randint(10, 15);
         monster->hp = randint(15, 20) * monster->level;
         monster->atk = randint(3, 5) * monster->level;
@@ -135,7 +135,7 @@ void addMonsterObject(roomType room) {
 objectType* makeTreasureObject()
 {
     objectType* treasure = (objectType*)malloc(sizeof(objectType));
-    treasure->objectType = objTREASURE;
+    treasure->objectTypeEnum = objTREASURE;
     treasure->level = randint(1, 3);
     treasure->hp = 0;
     treasure->atk = 0;
@@ -149,7 +149,7 @@ objectType* makeTreasureObject()
 objectType* makeMimicObject()
 {
     objectType* treasure = (objectType*)malloc(sizeof(objectType));
-    treasure->objectType = objTREASURE;
+    treasure->objectTypeEnum = objTREASURE;
     treasure->level = randint(1, 3);
     treasure->hp = 0;
     treasure->atk = randint(3, 6) * treasure->level;
@@ -240,9 +240,9 @@ void createRoom(SpaceTree* node, int n) {
 void drawMap() {
     for (int i = 0; i < MAP_SIZE; i++) {
         for (int j = 0; j < MAP_SIZE; j++) {
-            printf("%c", map[i][j]);
+            printscr("%c", map[i][j]);
         }
-        printf("\n");
+        printscr("\n");
     }
 }
 

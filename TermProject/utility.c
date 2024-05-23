@@ -1,5 +1,6 @@
 #include "mapMake.h"
 
+
 void setup()
 {
     COORD coord;
@@ -72,14 +73,6 @@ int randPer(int length, int* percent) {
 
 
 
-void removeCursor(void) { // 커서를 안보이게 한다
-
-	CONSOLE_CURSOR_INFO curInfo;
-	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
-	curInfo.bVisible = 0;
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
-}
-
 void showCursor(void){ // 커서를 안보이게 한다
 
 	CONSOLE_CURSOR_INFO curInfo;
@@ -87,73 +80,53 @@ void showCursor(void){ // 커서를 안보이게 한다
 	curInfo.bVisible=1;
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
 }
-
-void gotoxy(int x, int y) //내가 원하는 위치로 커서 이동
-{
-	COORD pos = { x, y };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);// WIN32API 함수입니다. 이건 알필요 없어요
-}
-
-void textcolor(int fg_color, int bg_color)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), fg_color | bg_color << 4);
-}
-// 화면 지우기고 원하는 배경색으로 설정한다.
-void cls(int bg_color, int text_color)
-{
-	char cmd[100];
-	system("cls");
-	sprintf(cmd, "COLOR %x%x", bg_color, text_color);
-	system(cmd);
-
-}
 // box 그리기 함수, ch 문자열로 (x1,y1) ~ (x2,y2) box를 그린다.
 void draw_boxL(int x1, int y1, int x2, int y2)
 {
 	int x, y;
     gotoxy(x1, y1);
-    printf("┌");
+    printscr("┌");
     gotoxy(x2, y1);
-    printf("┐");
+    printscr("┐");
     gotoxy(x1, y2); 
-    printf("└");
+    printscr("└");
     gotoxy(x2, y2);
-    printf("┘");
+    printscr("┘");
     for (x = x1 + 2; x < x2-1; x+=2) {
         gotoxy(x, y1);
-        printf("─");
+        printscr("─");
         gotoxy(x, y2);
-        printf("─");
+        printscr("─");
     }
     for (y = y1 + 1; y < y2; y++) {
         gotoxy(x1, y);
-        printf("│");
+        printscr("│");
         gotoxy(x2, y);
-        printf("│");
+        printscr("│");
     }
 }
 void draw_boxB(int x1, int y1, int x2, int y2)
 {
 	int x, y;
     gotoxy(x1, y1);
-    printf("┏");
+    printscr("┏");
     gotoxy(x2, y1);
-    printf("┓");
+    printscr("┓");
     gotoxy(x1, y2); 
-    printf("┗");
+    printscr("┗");
     gotoxy(x2, y2);
-    printf("┛");
+    printscr("┛");
     for (x = x1 + 2; x <= x2-1; x+=2) {
         gotoxy(x, y1);
-        printf("━");
+        printscr("━");
         gotoxy(x, y2);
-        printf("━");
+        printscr("━");
     }
     for (y = y1 + 1; y < y2; y++) {
         gotoxy(x1, y);
-        printf("┃");
+        printscr("┃");
         gotoxy(x2, y);
-        printf("┃");
+        printscr("┃");
     }
 }
 
@@ -162,6 +135,7 @@ void draw_boxB(int x1, int y1, int x2, int y2)
 int hidden_index; // Hidden 화면 번호 0 or 1
 HANDLE scr_handle[2]; // 화면 버퍼 변수
 long long frame_count = 0;
+int needBackCopy = 1;
 
 void removeCursor(void) { // 커서를 안보이게 한다
 
@@ -175,6 +149,7 @@ void scr_init()
 {
     int i;
     CONSOLE_CURSOR_INFO cci;
+    needSwitch = 0;
 
     cci.dwSize = 1;
     cci.bVisible = FALSE;
@@ -209,6 +184,7 @@ void scr_switch()
 {
     // hidden 을 active 로 변경한다.
     SetConsoleActiveScreenBuffer(scr_handle[hidden_index]);
+    needBackCopy = 1;
     // active를 hidden으로 변경한다.
     hidden_index = !hidden_index; // 0 <-> 1 toggle
 }
@@ -220,8 +196,10 @@ void scr_clear()
     // hidden screen를 clear한다.
     // WIDTH*2 * HEIGHT 값은 [속성]에서 설정한 값과 정확히 같아야 한다.
     // 즉, 화면 속성에서 너비(W)=80, 높이(H)=25라면 특수 문자는 2칸씩 이므로 WIDTH=40, HEIGHT=25이다.
-    FillConsoleOutputCharacter(scr_handle[hidden_index], ' ', WIDTH*2 * HEIGHT, Coor, &dw);
+    FillConsoleOutputCharacter(scr_handle[hidden_index], ' ', WIDTH * HEIGHT, Coor, &dw);
+    needBackCopy = 0;
 }
+
 
 void scr_release()
 {
@@ -240,11 +218,12 @@ void cls(int text_color, int bg_color)
     char cmd[100];
     system("cls");
     // 화면 크기 강제로 조정한다.
-    sprintf(cmd, "mode con: cols=%d lines=%d", WIDTH*2, HEIGHT);
+    sprintf(cmd, "mode con: cols=%d lines=%d", WIDTH, HEIGHT);
     system(cmd);
     sprintf(cmd, "COLOR %x%x", bg_color, text_color);
     system(cmd);
 }
+
 
 void gotoxy(int x, int y)
 {
@@ -253,28 +232,49 @@ void gotoxy(int x, int y)
     // hidden screen에 gotoxy
     SetConsoleCursorPosition(scr_handle[hidden_index], CursorPosition);
 }
-void printscr(char* str)
-{
-    DWORD dw;
-    // hidden screen에 gotoxy 되었다고 가정하고 print
-    WriteFile(scr_handle[hidden_index], str, strlen(str), &dw, NULL);
-}
-
  // 가변인자 처리를 위한 헤더 파일 추가
 
 void printscr(char* format, ...)
 {
+    if (needSwitch == 0)
+    {
+        scr_clear();
+        needSwitch = 1;
+    }
+        
+    
     va_list args; // 가변인자 목록을 저장할 변수
-    char buffer[1024]; // 출력할 문자열을 저장할 버퍼
+    char buffer[8192]; // 출력할 문자열을 저장할 버퍼
 
     va_start(args, format); // 가변인자 목록 초기화
 
     // format과 가변인자들을 버퍼에 형식화하여 저장
-    vsprintf(buffer, format, args);
+    vsnprintf(buffer, sizeof(buffer), format, args);
 
     va_end(args); // 가변인자 처리 종료
 
     // hidden screen에 출력
     DWORD dw;
     WriteFile(scr_handle[hidden_index], buffer, strlen(buffer), &dw, NULL);
+}
+
+void scr_copy() {
+    gotoxy(0, 0);
+    printscr("dawddwd");
+    CHAR_INFO buffer[WIDTH * HEIGHT];
+    COORD bufferSize = {WIDTH, HEIGHT};
+    COORD bufferCoord = {0, 0};
+    SMALL_RECT readRegion = {0, 0, WIDTH - 1, HEIGHT - 1};
+
+    // 0번 화면 버퍼에서 내용을 읽어옵니다.
+    if (!ReadConsoleOutput(scr_handle[!hidden_index], buffer, bufferSize, bufferCoord, &readRegion)) {
+        fprintf(stderr, "ReadConsoleOutput 실패\n");
+        return;
+    }
+    
+    // 1번 화면 버퍼에 내용을 씁니다.
+    if (!WriteConsoleOutput(scr_handle[hidden_index], buffer, bufferSize, bufferCoord, &readRegion)) {
+        fprintf(stderr, "WriteConsoleOutput 실패\n");
+        return;
+    }
 }

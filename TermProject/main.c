@@ -10,33 +10,41 @@ typedef struct game {
 gameType game = { MAIN_MENU, 0 };
 gameType pGame = { MAIN_MENU, 0 };
 gameType exGame = { MAIN_MENU, 0 };
+int needSwitch = 0;
 int customSeed = 0;
 
 int main() {
-    
     setup();
+    scr_init();
     
     unsigned char ch;
-    removeCursor();
+    removeCursor(); 
     printStartPage(game.nowMenuIndx);
-    Sleep(1000);
+    scr_switch();
 
 
 	while (1) {
+        if (1) {
+            scr_copy();
+            needBackCopy = 0;
+        }
         if(pGame.gameStatus != game.gameStatus)
         {
             exGame = pGame;
             switch (game.gameStatus) {
             case MAIN_MENU:
+                scr_clear();
                 printStartPage(game.nowMenuIndx);
                 break;
             case ASK_NEW:
                 printAskModal(game.nowMenuIndx, 0);
                 break;
             case SETTING:
+                scr_clear();
                 printSettingPage(game.nowMenuIndx);
                 break;
             case MAKE_MAP:
+                scr_clear();
                 printMakeMapPage(game.nowMenuIndx);
                 break;
             case MAKE_MAP_EXPLORE:
@@ -46,6 +54,7 @@ int main() {
                 printAskModal(game.nowMenuIndx, 1);
                 break;
             case GAME_START:
+                printGamePage();
                 break;
             case GAME_OVER:
                 break;
@@ -55,32 +64,31 @@ int main() {
                 break;
             }
             pGame = game;
+            
         }
-        else if(pGame.nowMenuIndx != game.nowMenuIndx)
-        {
-            switch (game.gameStatus) {
-            case MAIN_MENU:
-                break;
-            case ASK_NEW:
-                break;
-            case SETTING:
+        // else if(pGame.nowMenuIndx != game.nowMenuIndx)
+        // {
+        //     switch (game.gameStatus) {
+        //     case MAIN_MENU:
+        //         break;
+        //     case ASK_NEW:
+        //         break;
+        //     case SETTING:
                 
-                break;
-            case GAME_START:
-                break;
-            case GAME_OVER:
-                break;
-            case GAME_CLEAR:
-                break;
-            default:
-                break;
-            }
-            pGame = game;
-        }
+        //         break;
+        //     case GAME_START:
+        //         break;
+        //     case GAME_OVER:
+        //         break;
+        //     case GAME_CLEAR:
+        //         break;
+        //     default:
+        //         break;
+        //     }
+        //     pGame = game;
+        // }
 		if (kbhit() == 1) {  // 키보드가 눌려져 있으면
 			ch = getch(); // key 값을 읽는다
-            gotoxy(10, 10);
-            printf("%h", ch);
 			//
 			// ESC 누르면 프로그램 종료 추가
             if (ch == ESC) {
@@ -131,7 +139,7 @@ int main() {
                         break;
                     case 1:
                         gotoxy(98, 6);
-                        printf("    ");
+                        printscr("    ");
                         gotoxy(98, 6);
                         showCursor();
                         scanf("%d", &customSeed); 
@@ -160,7 +168,7 @@ int main() {
                 {
                     difficulty = game.nowMenuIndx;
                     mapComplete();
-
+                    game.gameStatus = GAME_START;
                 }
             }
             else if(ch == BACKSPACE)
@@ -285,7 +293,12 @@ int main() {
 				// 특수 문자가 아니지만 AWSD를 방향키 대신 사용하는 경우 처리
 			}
 		}
-		
+        if(1)
+        {
+            scr_switch();
+            needSwitch = 0;
+        }
+        
 		Sleep(DELAY); // Delay를 줄이면 속도가 빨라진다.
 	}
     return 0;

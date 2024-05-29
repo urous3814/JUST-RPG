@@ -72,14 +72,6 @@ int randPer(int length, int* percent) {
 }
 
 
-
-void showCursor(void){ // 커서를 안보이게 한다
-
-	CONSOLE_CURSOR_INFO curInfo;
-	GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
-	curInfo.bVisible=1;
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
-}
 // box 그리기 함수, ch 문자열로 (x1,y1) ~ (x2,y2) box를 그린다.
 void draw_boxL(int x1, int y1, int x2, int y2)
 {
@@ -129,7 +121,6 @@ void draw_boxB(int x1, int y1, int x2, int y2)
         printscr("┃");
     }
 }
-
 //더블 버퍼링 
 
 int hidden_index; // Hidden 화면 번호 0 or 1
@@ -144,6 +135,27 @@ void removeCursor(void) { // 커서를 안보이게 한다
     curInfo.bVisible = 0;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
 }
+
+void removeAllCursor(void) { // 커서를 안보이게 한다
+    CONSOLE_CURSOR_INFO cci;
+    cci.dwSize = 1;
+    cci.bVisible = FALSE;
+    SetConsoleCursorInfo(scr_handle[0], &cci);
+    SetConsoleCursorInfo(scr_handle[1], &cci);
+}
+
+
+
+void showCursor(void) {
+    CONSOLE_CURSOR_INFO curInfo;
+    curInfo.dwSize = 1; // 커서 크기
+    curInfo.bVisible = TRUE; // 커서 보이기 여부
+
+    // Hidden screen에서 커서 상태를 설정합니다.
+    SetConsoleCursorInfo(scr_handle[hidden_index], &curInfo);
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &curInfo);
+}
+
 
 void scr_init()
 {
@@ -193,11 +205,20 @@ void scr_clear()
 {
     COORD Coor = { 0, 0 };
     DWORD dw;
+    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+    needBackCopy = 0;
+    // 현재 콘솔 화면 버퍼의 속성을 가져옵니다.
+    GetConsoleScreenBufferInfo(scr_handle[hidden_index], &csbiInfo);
     // hidden screen를 clear한다.
     // WIDTH*2 * HEIGHT 값은 [속성]에서 설정한 값과 정확히 같아야 한다.
     // 즉, 화면 속성에서 너비(W)=80, 높이(H)=25라면 특수 문자는 2칸씩 이므로 WIDTH=40, HEIGHT=25이다.
     FillConsoleOutputCharacter(scr_handle[hidden_index], ' ', WIDTH * HEIGHT, Coor, &dw);
+
+    FillConsoleOutputAttribute(scr_handle[hidden_index], csbiInfo.wAttributes, WIDTH * HEIGHT, Coor, &dw);
+
     needBackCopy = 0;
+    needSwitch = 1;
+    //색 초기화
 }
 
 
@@ -238,7 +259,6 @@ void printscr(char* format, ...)
 {
     if (needSwitch == 0)
     {
-        scr_clear();
         needSwitch = 1;
     }
         
@@ -257,24 +277,38 @@ void printscr(char* format, ...)
     DWORD dw;
     WriteFile(scr_handle[hidden_index], buffer, strlen(buffer), &dw, NULL);
 }
-
+CHAR_INFO cpBuffer[WIDTH * HEIGHT];
 void scr_copy() {
-    gotoxy(0, 0);
-    printscr("dawddwd");
-    CHAR_INFO buffer[WIDTH * HEIGHT];
+    
     COORD bufferSize = {WIDTH, HEIGHT};
     COORD bufferCoord = {0, 0};
     SMALL_RECT readRegion = {0, 0, WIDTH - 1, HEIGHT - 1};
 
     // 0번 화면 버퍼에서 내용을 읽어옵니다.
-    if (!ReadConsoleOutput(scr_handle[!hidden_index], buffer, bufferSize, bufferCoord, &readRegion)) {
+    if (!ReadConsoleOutput(scr_handle[!hidden_index], cpBuffer, bufferSize, bufferCoord, &readRegion)) {
         fprintf(stderr, "ReadConsoleOutput 실패\n");
         return;
     }
     
     // 1번 화면 버퍼에 내용을 씁니다.
-    if (!WriteConsoleOutput(scr_handle[hidden_index], buffer, bufferSize, bufferCoord, &readRegion)) {
+    if (!WriteConsoleOutput(scr_handle[hidden_index], cpBuffer, bufferSize, bufferCoord, &readRegion)) {
         fprintf(stderr, "WriteConsoleOutput 실패\n");
         return;
     }
+}
+
+void gotoxyScr(int x, int y) //내가 원하는 위치로 커서 이동
+{
+    COORD pos = { x, y };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);// WIN32API 함수입니다. 이건 알필요 없어요
+}
+
+void printMapBlock(int x, int y, char ch, int color) {
+    textcolor(WHITE, WHITE);
+    for(int i = 0; i < 2; i++)
+    {
+        gotoxy(60 + x*4, 10 + y*2 + i);
+        printscr("####");
+    }
+    textcolor(WHITE, BLACK);
 }

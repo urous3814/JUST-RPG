@@ -55,26 +55,6 @@ void drawRoom(roomType room) {
             map[i][j] = ROOM;
         }
     }
-    switch (room.type)
-    {
-    case Store:
-        map[room.x + room.width / 2][room.y + room.height / 2] = STORE;
-        break;
-    case Treasure:
-        map[room.x + room.width / 2][room.y + room.height / 2] = TREASURE;
-        break;
-    case Mimic:
-        map[room.x + room.width / 2][room.y + room.height / 2] = MIMIC;
-        break;
-    case Boss:
-        map[room.x + room.width / 2][room.y + room.height / 2] = BOSS;
-        break;
-    case Elite:
-        map[room.x + room.width / 2][room.y + room.height / 2] = ELITE;
-        break;
-    default:
-        break;
-    }
 }
 
 
@@ -169,6 +149,10 @@ void addRoomObject(roomType room) {
     //유형별 특별 오브젝트 추가하기
     switch (room.type)
     {
+    case PlayerSpawn:
+        //initPlayer(room.x + room.width / 2, room.y + room.height / 2);
+        initPlayer(1, 1);
+        break;
     case Treasure:
         zLayer[room.x + room.width / 2][room.y + room.height / 2].type = objTREASURE;
         zLayer[room.x + room.width / 2][room.y + room.height / 2].object = makeTreasureObject();
@@ -192,21 +176,14 @@ void addRoomObject(roomType room) {
 
 void mapComplete()
 {
-    //1단계 맵 확장
-
-    for (int i = 0; i < MAP_SIZE; i++)
-    {
-        for (int j = 0; j < MAP_SIZE; j++)
-        {
-            for (int x = 0; x < 2; x++)
-            {
-                for (int y = 0; y < 2; y++)
-                {
-                    mapExpand[i * 2 + x][j * 2 + y] = map[i][j];
-                }
-            }
+    for (int i = 0; i < MAP_SIZE; i++) {
+        for (int j = 0; j < MAP_SIZE; j++) {
+            zLayer[i][j].type = -1;
         }
     }
+    //1단계 플레이어 배치
+    int spawnIndex = randint(0, MAX_ROOM - 1);
+    rooms[spawnIndex].type = PlayerSpawn;
     //2단계 오브젝트 배치
     for (int i = 0; i < MAX_ROOM; i++)
     {

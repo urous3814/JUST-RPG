@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="gameControl.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mapMake.c" />
     <ClCompile Include="Theme.c" />

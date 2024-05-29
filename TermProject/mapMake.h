@@ -75,7 +75,7 @@
 #define RIGHT2	'd'
 
 //enumÇü Á¤ÀÇ
-enum roomList { Store, Monster, Boss, Treasure, Mimic, Elite };
+enum roomList { Store, Monster, Boss, Treasure, Mimic, Elite, PlayerSpawn };
 enum objectEnum { objMONSTER, objBOSS, objELITE, objTREASURE, objMIMIC, objSTORE };
 enum monEnum {NormalM, EliteM, BossM};
 
@@ -113,6 +113,7 @@ typedef struct item {
 
 extern int needSwitch;
 extern int needBackCopy;
+extern int needSightRender;
 
 typedef struct object {
     enum objectEnum objectTypeEnum;
@@ -125,14 +126,35 @@ typedef struct object {
     itemType* item;
 } objectType;
 
+typedef struct player {
+    int hp;
+    int atk;
+    int def;
+    int gold;
+    int exp;
+    int level;
+    int x;
+    int y;
+    itemType* item[3];
+} playerType;
+
+extern playerType player;
+
 typedef struct zLayer {
     int type;
     objectType* object;
 } zLayerType;
-char map[MAP_SIZE][MAP_SIZE+1];
-char mapExpand[MAP_SIZE*2][MAP_SIZE*2+1];
 zLayerType zLayer[MAP_SIZE][MAP_SIZE];
+char map[MAP_SIZE][MAP_SIZE+1];
+
 roomType rooms[MAX_ROOM];
+
+typedef struct {
+    int mapSight[11][2];
+    int size[11];
+    int startX[11];
+} sightType;
+extern sightType playerViewSight;
 
 int difficulty;
 
@@ -154,7 +176,7 @@ void printMakeMapPage(int nowIndx);
 void printMapStr(int nowIndx);
 void divideSpace(SpaceTree* node, int n);
 void drawRoom(roomType room);
-void drawMap(int x, int y, int width, int height);
+void drawMap();
 void drawMapExpand(int x, int y, int width, int height);
 objectType* makeMonsterObject(enum monEnum monType);
 objectType* makeObject(enum objectEnum objType);
@@ -190,6 +212,9 @@ void scr_clear();
 void scr_switch();
 void scr_copy();
 void printGamePage();
+void printPlayerzLayerSight();
+void printMapBlock(int x, int y, char ch, int color);
+void printPlayerMapSight();
 
 
 

@@ -27,6 +27,9 @@
     <ClCompile Include="Theme.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="gameControl.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mapMake.h">

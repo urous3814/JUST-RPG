@@ -13,6 +13,8 @@ gameType exGame = { MAIN_MENU, 0 };
 int needSwitch = 0;
 int customSeed = 0;
 
+playerType player = { 100, 10, 5, 0, 0, 1, 0, 0, {NULL, NULL, NULL} };
+
 int main() {
     setup();
     scr_init();
@@ -24,7 +26,7 @@ int main() {
 
 
 	while (1) {
-        if (1) {
+        if (needBackCopy) {
             scr_copy();
             needBackCopy = 0;
         }
@@ -51,10 +53,15 @@ int main() {
                 printMapStr(game.nowMenuIndx);
                 break;
             case GAME_SETTING:
+                scr_clear();
                 printAskModal(game.nowMenuIndx, 1);
                 break;
             case GAME_START:
+                scr_clear();
+                setGame();
                 printGamePage();
+                printPlayerMapSight();
+                printPlayerzLayerSight();
                 break;
             case GAME_OVER:
                 break;
@@ -142,8 +149,40 @@ int main() {
                         printscr("    ");
                         gotoxy(98, 6);
                         showCursor();
-                        scanf("%d", &customSeed); 
-                        removeCursor();
+                        scr_switch();
+                        needSwitch = 0;
+                        char seedChar[5];
+                        int i = 0;
+                        while(1)
+                        {
+                            scr_copy();
+                            gotoxy(98+i, 6);
+                            seedChar[i] = getch();
+                            customSeed = customSeed * 10 + (seedChar[i] - '0');
+                            if(seedChar[i] == BACKSPACE && i > 0)
+                            {
+                                
+                                gotoxy(98+i-1, 6);
+                                printscr(" ");
+                                seedChar[i] = '0';
+                                customSeed = customSeed / 10;
+                                i -= 2;
+                                gotoxy(98 + i+1, 6);
+                            }
+                            else if(seedChar[i] == ENTER && i > 0)
+                            {
+                                break;
+                            }
+                            else if(i<4){
+                                printscr("%c", seedChar[i]);
+                            }
+                            showCursor();
+                            scr_switch();
+                            if (i < 4) {
+                                i++;
+                            }
+                        }
+                        removeAllCursor();
                         generateDungeon(customSeed);
                         printMapStr(0);
                         break;
@@ -288,12 +327,37 @@ int main() {
                     }
                     printAskModalYN(game.nowMenuIndx, 1);
                 }
+                else if(game.gameStatus == GAME_START)
+                {
+                    switch (ch) {
+                    case UP:
+                        moveSight(0, -1);
+                        break;
+                    case DOWN:
+                        moveSight(0, 1);
+                        break;
+                    case LEFT:
+                        moveSight(-1, 0);
+                        break;
+                    case RIGHT:
+                        moveSight(1, 0);
+                        break;
+                    default:
+                        break;
+                    }
+                }
 			}
 			else {
 				// 특수 문자가 아니지만 AWSD를 방향키 대신 사용하는 경우 처리
 			}
 		}
-        if(1)
+        if(needSightRender)
+        {
+            printPlayerMapSight();
+            printPlayerzLayerSight();
+            needSightRender = 0;
+        }
+        if(needSwitch)
         {
             scr_switch();
             needSwitch = 0;

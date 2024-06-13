@@ -10,9 +10,8 @@
 #include <stdarg.h>
 #include <string.h>
 
-
 // 게임 설정
-#define DELAY 100
+#define DELAY 50
 #define WIDTH 123
 #define HEIGHT 47
 
@@ -62,6 +61,7 @@
 #define BACKSPACE 0x08 // Backspace 누르면 이전 메뉴로
 #define SPECIAL1 0xe0 // 특수키는 0xe0 + key 값으로 구성된다.
 #define SPECIAL2 0x00 // keypad 경우 0x00 + key 로 구성된다.
+#define SPACE 0x20 // Space 누르면 선택
 
 #define UP  0x48 // Up key는 0xe0 + 0x48 두개의 값이 들어온다.
 #define DOWN 0x50
@@ -78,6 +78,10 @@
 enum roomList { Store, Monster, Boss, Treasure, Mimic, Elite, PlayerSpawn };
 enum objectEnum { objMONSTER, objBOSS, objELITE, objTREASURE, objMIMIC, objSTORE };
 enum monEnum {NormalM, EliteM, BossM};
+enum mobTypeEnum {Goust, Slime, Goblin, Orc, Troll, Dragon};
+enum keyModeEnum {MOVE, ATTACK, INVENTORY, EXIT, LEVELUP, GAMECLEAR};
+enum magicType {Ice, Scare, Mabi, None};
+
 
 
 typedef struct room {
@@ -114,10 +118,24 @@ typedef struct item {
 extern int needSwitch;
 extern int needBackCopy;
 extern int needSightRender;
+extern char* mobTypeChar[6];
+extern int mobIndx[6];
+extern char* mobNameKor[6];
+
+typedef struct mobDetailType {
+    enum mobTypeEnum mobType;
+    char mobName[3]; 
+    int mobIndx;
+    enum magicType magic;
+    int magicLen;
+    int hp;
+} mobDetailType;
 
 typedef struct object {
     enum objectEnum objectTypeEnum;
-    int hp;
+    mobDetailType mobDetail;
+    int isMoved;
+    int maxHp;
     int atk;
     int def;
     int gold;
@@ -128,6 +146,9 @@ typedef struct object {
 
 typedef struct player {
     int hp;
+    int nowHp;
+    int mp;
+    int nowMp;
     int atk;
     int def;
     int gold;
@@ -143,6 +164,7 @@ extern playerType player;
 typedef struct zLayer {
     int type;
     objectType* object;
+    int isAttackArea;
 } zLayerType;
 zLayerType zLayer[MAP_SIZE][MAP_SIZE];
 char map[MAP_SIZE][MAP_SIZE+1];
@@ -156,7 +178,43 @@ typedef struct {
 } sightType;
 extern sightType playerViewSight;
 
+typedef struct skill{
+    char* name;
+    char* Hit[3];
+    int mana;
+    int damage[2];
+    char key;
+    enum magicType magic;
+} skillType;
+
+extern skillType skill[3];
+extern char* statusName[4];
+skillType* nowSkill;
+
+
 int difficulty;
+
+
+extern objectType* bossArray[10];
+extern int bossArraySize;
+extern objectType* eliteArray[20];
+extern int eliteArraySize;
+extern objectType* monsterArray[100];
+extern int monsterArraySize;
+extern nowSkillIndx;
+extern int turn;
+extern int killCount;
+
+// 공격
+
+extern enum keyModeEnum keyMode;
+
+
+extern char* magicName[4];
+enum Direction {Up, Down, Left, Right, noDir};
+extern enum Direction attackDirection;
+extern ismarked;
+extern playerType exPlayer;
 
 
 
@@ -213,8 +271,12 @@ void scr_switch();
 void scr_copy();
 void printGamePage();
 void printPlayerzLayerSight();
-void printMapBlock(int x, int y, char ch, int color);
+void printMapBlock(int x, int y, char ch, int bgcolor, int fgcolor);
 void printPlayerMapSight();
+void printObjBlock(int x, int y, char* ch, int indx, int bgcolor, int fgcolor);
+void moveMobInSight();
+void isAvailableMove(int x, int y);
+void AttackFunc(objectType* atkMob, int atk);
 
 
 

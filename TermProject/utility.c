@@ -71,6 +71,16 @@ int randPer(int length, int* percent) {
     return -1;
 }
 
+void empty_box(int x1, int y1, int x2, int y2)
+{
+    int x, y;
+    for (x = x1; x <= x2; x++) {
+        for (y = y1; y <= y2; y++) {
+            gotoxy(x, y);
+            printscr(" ");
+        }
+    }
+}
 
 // box 그리기 함수, ch 문자열로 (x1,y1) ~ (x2,y2) box를 그린다.
 void draw_boxL(int x1, int y1, int x2, int y2)
@@ -212,9 +222,9 @@ void scr_clear()
     // hidden screen를 clear한다.
     // WIDTH*2 * HEIGHT 값은 [속성]에서 설정한 값과 정확히 같아야 한다.
     // 즉, 화면 속성에서 너비(W)=80, 높이(H)=25라면 특수 문자는 2칸씩 이므로 WIDTH=40, HEIGHT=25이다.
-    FillConsoleOutputCharacter(scr_handle[hidden_index], ' ', WIDTH * HEIGHT, Coor, &dw);
+    FillConsoleOutputCharacter(scr_handle[hidden_index], ' ', (WIDTH + 1) * (HEIGHT + 1), Coor, &dw);
 
-    FillConsoleOutputAttribute(scr_handle[hidden_index], csbiInfo.wAttributes, WIDTH * HEIGHT, Coor, &dw);
+    FillConsoleOutputAttribute(scr_handle[hidden_index], csbiInfo.wAttributes, (WIDTH + 1) * (HEIGHT + 1), Coor, &dw);
 
     needBackCopy = 0;
     needSwitch = 1;
@@ -277,12 +287,12 @@ void printscr(char* format, ...)
     DWORD dw;
     WriteFile(scr_handle[hidden_index], buffer, strlen(buffer), &dw, NULL);
 }
-CHAR_INFO cpBuffer[WIDTH * HEIGHT];
+CHAR_INFO cpBuffer[(WIDTH + 1) * (HEIGHT + 1)];
 void scr_copy() {
     
-    COORD bufferSize = {WIDTH, HEIGHT};
+    COORD bufferSize = {WIDTH+1, HEIGHT+1};
     COORD bufferCoord = {0, 0};
-    SMALL_RECT readRegion = {0, 0, WIDTH - 1, HEIGHT - 1};
+    SMALL_RECT readRegion = {0, 0, WIDTH+1, HEIGHT+1};
 
     // 0번 화면 버퍼에서 내용을 읽어옵니다.
     if (!ReadConsoleOutput(scr_handle[!hidden_index], cpBuffer, bufferSize, bufferCoord, &readRegion)) {
@@ -303,12 +313,21 @@ void gotoxyScr(int x, int y) //내가 원하는 위치로 커서 이동
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);// WIN32API 함수입니다. 이건 알필요 없어요
 }
 
-void printMapBlock(int x, int y, char ch, int color) {
-    textcolor(WHITE, WHITE);
+void printMapBlock(int x, int y, char ch, int bgcolor, int fgcolor) {
+    textcolor(fgcolor, bgcolor);
     for(int i = 0; i < 2; i++)
-    {
+    { 
         gotoxy(60 + x*4, 10 + y*2 + i);
-        printscr("####");
+        printscr("▒▒");
     }
+    textcolor(WHITE, BLACK);
+}
+
+void printObjBlock(int x, int y, char* ch, int indx, int bgcolor, int fgcolor, int pointColor) {
+    textcolor(fgcolor, bgcolor);
+    gotoxy(60 + x*4, 10 + y*2);
+    printscr("%s%2i", ch, indx);
+    gotoxy(60 + x*4, 10 + y*2 + 1);
+    printscr("▒▒");
     textcolor(WHITE, BLACK);
 }

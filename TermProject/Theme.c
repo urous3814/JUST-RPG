@@ -1,31 +1,85 @@
-#include "mapMake.h"
+Ôªø#include "mapMake.h"
 
-char* firstMenu[4] = { "  ªı     ∑Œ     Ω√     ¿€  ", "  ¿Ã     æÓ     «œ     ±‚  ", "  »Ø     ∞Ê     º≥     ¡§  "};
+char* firstMenu[4] = { "  ÏÉà     Î°ú     Ïãú     Ïûë  ", "  Ïù¥     Ïñ¥     Ìïò     Í∏∞  ", "  Ìôò     Í≤Ω     ÏÑ§     Ï†ï  "};
+
+int mobListLen = 0;
+
+void colorLogo(char* str)
+{
+    int color = MAGENTA1;
+    for(int i = 0; i < strlen(str); i++)
+    {
+        if(str[i] != ' ')
+            textcolor(color, color);
+        else
+            textcolor(BLACK, BLACK);
+        printscr("%c", str[i]);
+    }
+    textcolor(WHITE, BLACK);
+}
+
+void colorSkill(char* str)
+{
+    for(int i = 0; i < strlen(str); i++)
+    {
+        
+        if(str[i] == '#')
+            textcolor(RED2, RED2);
+        else if(str[i] == 'P')
+            textcolor(CYAN1, CYAN1);
+        else
+            textcolor(GRAY2, GRAY2);
+        printscr("%c", str[i]);
+    }
+    textcolor(BLACK, GRAY1);
+}
+
+void printDungeonScene(int x, int y)
+{  
+    gotoxy(x, y + 1);
+    printscr("         /####/  . ‚îÇRPG Game       ");
+    gotoxy(x, y + 2);
+    printscr("        @====@ .   ‚îÇBased on       ");
+    gotoxy(x, y + 3);
+    printscr("     O  |   /|     ‚îÇROUGE.       ");
+    gotoxy(x, y + 4);
+    printscr("    /|\\ |  / |     ‚îÇ2371335      ");
+    gotoxy(x, y + 5);
+    printscr("  .  |  | /  |  .  ‚îÇKIMJIHUN  ");
+    gotoxy(x, y + 6);
+    printscr("     ^  |/  .|    .‚îÇ            ");
+    gotoxy(x, y + 7);
+    printscr("    | |   .        ‚îÇ        ");
+    gotoxy(x, y + 8);
+}
 
 void printLogo(int x, int y)
-{
+{  
     gotoxy(x, y);
-    printscr("   ####  ##   ##    #####   ######           ######   ######     ####   \n");
+    colorLogo("   ####   ##  ##    #####   ######           ######   ######     ####   \n");
     gotoxy(x, y + 1);
-    printscr("    ##    ##  ##   ### ##   # ## #            ##  ##   ##  ##   ##  ##  \n");
+    colorLogo("    ##    ##  ##   ### ##   # ## #            ##  ##   ##  ##   ##  ##  \n");
     gotoxy(x, y + 2);
-    printscr("    ##    ##  ##   ###        ##              ##  ##   ##  ##   ##      \n");
+    colorLogo("    ##    ##  ##   ###        ##              ##  ##   ##  ##   ##      \n");
     gotoxy(x, y + 3);
-    printscr("    ##    ##  ##    ####      ##              #####    #####    ## ###  \n");
+    colorLogo("    ##    ##  ##    ####      ##              #####    #####    ## ###  \n");
     gotoxy(x, y + 4);
-    printscr(" ## ##    ##  ##      ###     ##              ## ##    ##       ##  ##  \n");
+    colorLogo(" ## ##    ##  ##      ###     ##              ## ##    ##       ##  ##  \n");
     gotoxy(x, y + 5);
-    printscr(" ## ##    ##  ##   ## ###     ##              ## ##    ##       ##  ##  \n");
+    colorLogo(" ## ##    ##  ##   ## ###     ##              ## ##    ##       ##  ##  \n");
     gotoxy(x, y + 6);
-    printscr("  ###      ####    #####     ####            ### ###  ####       #####  \n");
+    colorLogo("  ###      ####    #####     ####            ### ###  ####       ####   \n");
     gotoxy(x, y + 7);
-    printscr("                                                                         \n");
+    colorLogo("                                                                         \n");
+    printDungeonScene(85, 22);
 }
 
 void printStartPage(int nowIndx){
     printLogo(25, 10);
     draw_boxL(0, 0, 120, 46);
     draw_boxL(80, 30, 116, 42);
+    gotoxy(80 + 12*2, 30);
+    printscr("‚î¥");
     gotoxy(5, 44);
     printscr("github.com/urous3814/JUST-RPG");
     printFirstMenu(nowIndx);
@@ -36,130 +90,289 @@ void printSettingPage(int nowIndx){
     draw_boxB(18, 19, 102, 43);
     draw_boxL(20, 20, 100, 24);
     gotoxy(54, 22);
-    printscr("  »Ø ∞Ê º≥ ¡§ ");
+    printscr("  Ìôò Í≤Ω ÏÑ§ Ï†ï ");
     draw_boxL(20, 25, 60, 42);
     draw_boxL(60, 25, 100, 42);
     gotoxy(60, 25);
-    printscr("¶®");
+    printscr("‚î¨");
     gotoxy(60, 42);
-    printscr("¶™");
-    //»Ø∞Êº≥¡§ √¢ø°¥¬ ∞¢∞¢ ªÁøÓµÂ ≈©±‚, ªÁøÓµÂ on/off, »ø∞˙¿Ω ≈©±‚, »ø∞˙¿Ω on/off, µ⁄∑Œ∞°±‚, ¿⁄µø¿˙¿Â ≈œºˆ ø…º« ¡∂¡§ ∞°¥…
+    printscr("‚î¥");
+    //ÌôòÍ≤ΩÏÑ§Ï†ï Ï∞ΩÏóêÎäî Í∞ÅÍ∞Å ÏÇ¨Ïö¥Îìú ÌÅ¨Í∏∞, ÏÇ¨Ïö¥Îìú on/off, Ìö®Í≥ºÏùå ÌÅ¨Í∏∞, Ìö®Í≥ºÏùå on/off, Îí§Î°úÍ∞ÄÍ∏∞, ÏûêÎèôÏ†ÄÏû• ÌÑ¥Ïàò ÏòµÏÖò Ï°∞Ï†ï Í∞ÄÎä•
 }
 
-enum magicType {Ice, Scare, Mabi, None};
-char* maginName[4] = {"æÛ¿Ω", "∞¯∆˜", "∏∂∫Ò", "¥…∑¬ æ¯¿Ω"};
 
-typedef struct skill{
-    char* name;
-    char* Hit[3];
-    int mana;
-    int damage[2];
-    char key;
-    enum magicType magic;
-} skillType;
-
-skillType skill[3] = {
-    {"∫˘∞·", {"###", "   ", " P "}, 10, {3, 5}, 'H', Ice},
-    {"¬¸∞›", {" # ", " # ", " P "}, 5, {4, 9}, 'J', Scare},
-    {"±§∞›", {"###", "###", "#P#"}, 25, {0, 20}, 'K', Mabi}
-};
 
 void printSkill(int height, int index) {
     gotoxy(3, 2+height);
-    printscr("%s %s   (%c)", skill[index].Hit[0], skill[index].name, skill[index].key);
+    colorSkill(skill[index].Hit[0]);
+    gotoxy(7, 2+height);
+    printscr("%s   (%c)", skill[index].name, skill[index].key);
     gotoxy(3, 3+height);
-    printscr("%s ∏∂≥™º“∏ %d", skill[index].Hit[1], skill[index].mana);
+    colorSkill(skill[index].Hit[1]);
+    gotoxy(7, 3+height);
+    printscr("ÎßàÎÇòÏÜåÎ™® %d", skill[index].mana);
     gotoxy(3, 4+height);
-    printscr("%s ∞¯∞›∑¬ %d-%d", skill[index].Hit[2], skill[index].damage[0], skill[index].damage[1]);
+    colorSkill(skill[index].Hit[2]);
+    gotoxy(7, 4+height);
+    printscr("Í≥µÍ≤©Î†• %d-%d", skill[index].damage[0], skill[index].damage[1]);
     gotoxy(3, 5+height);
-    printscr("%s", maginName[skill[index].magic]);
+    if(height != 24)
+        printscr("    %s", magicName[skill[index].magic]);
+    else
+        printscr("        ");
 }
 
-void drawPlayerView() {
+void printPlayerInfo() {
+
+}
+
+void printMobStatus(int indx, objectType* mobObj) {
+    mobListLen = indx+1;
+    gotoxy(104, 2 + 4*indx);
+    printscr("                 ");
+    gotoxy(104, 2 + 4*indx);
+    printscr("[ %s %2d ]\n", mobNameKor[mobObj->mobDetail.mobType], mobObj->mobDetail.mobIndx);
+    gotoxy(104, 3 + 4*indx);
+    printscr("                 ");
+    gotoxy(104, 3 + 4*indx);
+    printscr("LV%2d HP%3d/%d\n", mobObj->level, mobObj->mobDetail.hp, mobObj->maxHp);
+    gotoxy(104, 4 + 4*indx);
+    printscr("                 ");
+    gotoxy(104, 4 + 4*indx);
+    if(mobObj->mobDetail.magicLen > 0)
+        printscr("STATUS %s[%d]\n", statusName[mobObj->mobDetail.magic], mobObj->mobDetail.magicLen);
+    else
+        printscr("STATUS Ï†ïÏÉÅ\n");
+
+    int hpBarSize = 17 * mobObj->mobDetail.hp / mobObj->maxHp;
+    gotoxy(104, 5 + 4*indx);
+    textcolor(BLACK, BLACK);
+    printscr("#################");
+    gotoxy(104, 5 + 4*indx);
+    textcolor(RED1, RED1);
+    printscr("%.*s", hpBarSize, "=================");
+    textcolor(BLACK, GRAY1);
+}
+
+void eraseMobStatus()
+{
+    textcolor(BLACK, GRAY1);
+    for(int i = 0; i < mobListLen; i++)
+    {
+        gotoxy(104, 2 + 4*i);
+        printscr("                  ");
+        gotoxy(104, 3 + 4*i);
+        printscr("                  ");
+        gotoxy(104, 4 + 4*i);
+        printscr("                  ");
+        gotoxy(104, 5 + 4*i);
+        printscr("                  ");
+    }
+    mobListLen = 0;
+}
+
+void printMobList() {
+    eraseMobStatus();
+    int indx = 0;
+    for (int i = 0; i < bossArraySize; i++) {
+        printMobStatus(indx++, bossArray[i]);
+    }
+    for (int i = 0; i < eliteArraySize; i++) {
+        printMobStatus(indx++, eliteArray[i]);
+    }
+    for (int i = 0; i < monsterArraySize; i++) {
+        printMobStatus(indx++, monsterArray[i]);
+    }
+}
+
+
+
+void printNowAction(int manaAvailable) {
+    textcolor(BLACK, GRAY1);
+    empty_box(1, 25, 21, 34);
+    draw_boxL(1, 25, 21, 27);
+    gotoxy(8, 26);
+    printscr("ÌòÑÏû¨Ïï°ÏÖò");
+    draw_boxL(1, 27, 21, 34);
+    gotoxy(1, 27);
+    printscr("‚îú");
+    gotoxy(21, 27);
+    printscr("‚î§");
+    printSkill(26, nowSkillIndx);
+    if(manaAvailable == 0)
+    {
+        gotoxy(3, 32);
+        printscr("ÎßàÎÇò Î∂ÄÏ°±");
+    }
+    else
+    {
+        gotoxy(3, 32);
+        printscr("ÌôïÏù∏( S P A C E )");
+        gotoxy(3, 33);
+        printscr("Ï∑®ÏÜå( BACKSPACE )");
+    }
+    textcolor(WHITE, BLACK);
+}
+void printBar(int x, int barSize, int amount, int full)
+{
+    int colorFg = WHITE, colorBg = BLACK;
+    char bar[30];
+    if(x == 0)
+        sprintf(bar, "#HP#%d/%d#############", amount, full);
+    else
+        sprintf(bar, "#MP#%d/%d#############", amount, full);
+
+    gotoxy(22 + x, 41);
+    for(int i = 0; i < 20; i++)
+    {
+        if(bar[i]=='#')
+            colorFg = BLACK;
+        else
+            colorFg = WHITE;
+
+        if(i<barSize){
+            if(x == 0)
+                colorBg = RED1;
+            else
+                colorBg = BLUE1;
+            if(colorFg == BLACK)
+                textcolor(colorBg, colorBg);
+            else
+                textcolor(colorFg, colorBg);
+        }
+        else{
+            if(bar[i]=='#')
+                colorFg = BLACK;
+            else
+                colorFg = WHITE;
+            textcolor(colorFg, BLACK);
+        }
+        printscr("%c", bar[i]);
+
+    }
+    textcolor(BLACK, GRAY1);
+}
+
+void printExpBar(int barSize, int amount, int full)
+{
+    int colorFg = WHITE, colorBg = BLACK;
+    char bar[50];
+    sprintf(bar, "EXP#%d/%d#################################", amount, full);
+    gotoxy(22, 40);
+    for(int i = 0; i < 40; i++)
+    {
+        if(bar[i]=='#')
+            colorFg = BLACK;
+        else
+            colorFg = WHITE;
+
+        if(i<barSize){
+            colorBg = YELLOW1;
+            if(colorFg == BLACK)
+                textcolor(colorBg, colorBg);
+            else
+                textcolor(colorFg, colorBg);
+        }
+        else{
+            if(bar[i]=='#')
+                colorFg = WHITE;
+            else
+                colorFg = BLACK;
+            textcolor(colorFg, WHITE);
+        }
+        printscr("%c", bar[i]);
+    }
+    textcolor(BLACK, GRAY1);
+}
+
+void printPlayerStatus() {
+    textcolor(BLACK, GRAY1);
+    empty_box(20, 38, 98, 46);
+    draw_boxL(20, 38, 98, 46);
+    gotoxy(22, 39);
+    printscr("UROUS  LV. %d TURN: %d\n", player.level, turn);
+
+    int expBarSize = 42 * player.exp / (player.level*30);
+    printExpBar(expBarSize, player.exp, player.level*30);
+    int hpBarSize = 20 * player.nowHp / player.hp;
+    int mpBarSize = 20 * player.nowMp / player.mp;
+    printBar(0, hpBarSize, player.nowHp, player.hp);
+    printBar(20, mpBarSize, player.nowMp, player.mp);
+    gotoxy(22, 42);
+    printscr("ATK: %d  DEF: %d Í≥®Îìú: %d  ÌÇ¨ Ïπ¥Ïö¥Ìä∏: %d\n", player.atk, player.def, player.gold, killCount);
 
 }
 
 void printGamePage() {
-    // ¡¬√¯ ªÛ¥‹ Ω∫≈≥ ªÛ¿⁄
+    // Ï¢åÏ∏° ÏÉÅÎã® Ïä§ÌÇ¨ ÏÉÅÏûê
+    textcolor(BLACK, GRAY1);
+    empty_box(1, 1, 21, 18);
     draw_boxL(1, 1, 21, 3);
     gotoxy(10, 2);
-    printscr("Ω∫≈≥");
+    printscr("Ïä§ÌÇ¨");
     draw_boxL(1, 3, 21, 18);
     gotoxy(1, 3);
-    printscr("¶ß");
+    printscr("‚îú");
     gotoxy(21, 3);
-    printscr("¶©");
+    printscr("‚î§");
     printSkill(2, 0);
     printSkill(7, 1);
     printSkill(12, 2);
 
-    // ¡¬√¯ «œ¥‹ ∂Û¿Ã«¡ ∫£ΩΩ
-    draw_boxL(1, 19, 21, 22);
-    gotoxy(3, 19);
-    printscr("∂Û¿Ã«¡ ∫£ΩΩ\n");
+    // Ï¢åÏ∏° ÌïòÎã® ÎùºÏù¥ÌîÑ Î≤†Ïä¨
+    empty_box(1, 20, 21, 23);
+    draw_boxL(1, 20, 21, 23);
     gotoxy(3, 20);
-    printscr("10-50%%¿« hp∑Œ º“ª˝\n");
+    printscr("ÎùºÏù¥ÌîÑ Î≤†Ïä¨\n");
     gotoxy(3, 21);
-    printscr("5-40%%¿« EXP º’Ω«\n");
+    printscr("10-50%%Ïùò hpÎ°ú ÏÜåÏÉù\n");
+    gotoxy(3, 22);
+    printscr("5-40%%Ïùò EXP ÏÜêÏã§\n");
 
-    // ¡ﬂæ” ªÛ¥‹ Ω√æﬂ «•Ω√
-    draw_boxL(22, 1, 100, 37);
-    gotoxy(61, 19);
-    printscr("Ω√æﬂπ¸¿ß ≥ª¿«\n");
-    gotoxy(61, 20);
-    printscr("Ω√æﬂ «•Ω√\n");
+    
+
+
+    // Ï§ëÏïô ÏÉÅÎã® ÏãúÏïº ÌëúÏãú
     //(100+22)/2=61 61 + 3*5 + 2 = 78     2 * 11 = 22
     // 61-4*5-1 = 40 
-    draw_boxL(40, 10, 82, 32);
+    // draw_boxL(40, 10, 82, 32);
 
-    // øÏ√¯ ªÛ¥‹ ∏ÛΩ∫≈Õ ¡§∫∏
-    draw_boxL(102, 1, 122, 15);
-    gotoxy(104, 2);
-    printscr("[ ∞Ì∫Ì∏∞ ]\n");
-    gotoxy(104, 3);
-    printscr("LV 1 HP 3\n");
-    gotoxy(104, 4);
-    printscr("STATUS æ‡»≠[2]\n");
-    gotoxy(104, 6);
-    printscr("[ ∞Ì∫Ì∏∞ ]\n");
-    gotoxy(104, 7);
-    printscr("LV 1 HP 10\n");
-    gotoxy(104, 8);
-    printscr("STATUS ¡§ªÛ\n");
-    gotoxy(104, 10);
-    printscr("[ ±∏øÔ ]\n");
-    gotoxy(104, 11);
-    printscr("LV 7 HP 95\n");
-    gotoxy(104, 12);
-    printscr("STATUS ±§∆¯[4]\n");
+    // Ïö∞Ï∏° ÏÉÅÎã® Î™¨Ïä§ÌÑ∞ Ï†ïÎ≥¥
+    empty_box(102, 1, 122, 34);
+    draw_boxL(102, 1, 122, 34);
+    // gotoxy(104, 2);
+    // printscr("[ Í≥†Î∏îÎ¶∞ ]\n");
+    // gotoxy(104, 3);
+    // printscr("LV 1 HP 3\n");
+    // gotoxy(104, 4);
+    // printscr("STATUS ÏïΩÌôî[2]\n");
+    // gotoxy(104, 6);
+    // printscr("[ Í≥†Î∏îÎ¶∞ ]\n");
+    // gotoxy(104, 7);
+    // printscr("LV 1 HP 10\n");
+    // gotoxy(104, 8);
+    // printscr("STATUS Ï†ïÏÉÅ\n");
+    // gotoxy(104, 10);
+    // printscr("[ Íµ¨Ïö∏ ]\n");
+    // gotoxy(104, 11);
+    // printscr("LV 7 HP 95\n");
+    // gotoxy(104, 12);
+    // printscr("STATUS Í¥ëÌè≠[4]\n");
 
-    // «œ¥‹ ¡ﬂæ” «√∑π¿ÃæÓ ªÛ≈¬
-    draw_boxL(21, 38, 101, 46);
-    gotoxy(23, 39);
-    printscr("UROUS\n");
-    gotoxy(23, 40);
-    printscr("HP 250  MP 40  TURN 108\n");
-    gotoxy(23, 41);
-    printscr("ROOM 13  ITEM 7\n");
-    gotoxy(23, 42);
-    printscr("ATK 13  DEF 7  LEV 2  LUC 10\n");
-    gotoxy(23, 43);
-    printscr("∞ÒµÂ : 250  ≈≥ ƒ´øÓ∆Æ : 12\n");
-    gotoxy(23, 44);
-    printscr("LV 2  ∞Ê«Ëƒ° πŸ\n");
-    gotoxy(23, 45);
-    printscr("55/250 √º∑¬ πŸ\n");
-    gotoxy(23, 46);
-    printscr("10/40 ∏∂≥™ πŸ\n");
+    // ÌïòÎã® Ï§ëÏïô ÌîåÎ†àÏù¥Ïñ¥ ÏÉÅÌÉú
+    printPlayerStatus();
 
-    // øÏ√¯ «œ¥‹ ∏ﬁ¥∫
-    draw_boxL(102, 16, 122, 46);
-    gotoxy(104, 17);
-    printscr("¿Œ∫•≈‰∏Æ (I)\n");
-    gotoxy(104, 19);
-    printscr("¿Â∫Ò (O)\n");
-    gotoxy(104, 21);
-    printscr("∏ﬁ¥∫ (ESC)\n");
+    // Ïö∞Ï∏° ÌïòÎã® Î©îÎâ¥
+    empty_box(102, 36, 122, 46);
+    draw_boxL(102, 36, 122, 46);
+    gotoxy(104, 37);
+    printscr("Ïù∏Î≤§ÌÜ†Î¶¨ (I)\n");
+    gotoxy(104, 39);
+    printscr("Ïû•ÎπÑ (O)\n");
+    gotoxy(104, 41);
+    printscr("Î©îÎâ¥ (ESC)\n");
+    textcolor(WHITE, BLACK);
+    
 }
 
 char* AskMenu[2] = { "      Y      ", "      N      "};
@@ -207,18 +420,52 @@ void printAskModal(int nowIndx, int nowStatus){
     if(nowStatus == 0)
     {
         gotoxy(46, 22);
-        printscr("∞‘¿”¿ª ªı∑Œ Ω√¿€«œΩ√∞⁄Ω¿¥œ±Ó?");
+        printscr("Í≤åÏûÑÏùÑ ÏÉàÎ°ú ÏãúÏûëÌïòÏãúÍ≤†ÏäµÎãàÍπå?");
         gotoxy(48, 24);
-        printscr("±‚¡∏ µ•¿Ã≈Õ¥¬ ªË¡¶µÀ¥œ¥Ÿ.");
+        printscr("Í∏∞Ï°¥ Îç∞Ïù¥ÌÑ∞Îäî ÏÇ≠Ï†úÎê©ÎãàÎã§.");
     }
     else if (nowStatus == 1)
     {
         gotoxy(46, 22);
-        printscr("∞‘¿”¿« ≥≠¿Ãµµ∏¶ º±≈√«ÿ¡÷ººø‰.");
+        printscr("Í≤åÏûÑÏùò ÎÇúÏù¥ÎèÑÎ•º ÏÑ†ÌÉùÌï¥Ï£ºÏÑ∏Ïöî.");
         
     }
     draw_boxL(45, 26, 75, 28);
     printAskModalYN(nowIndx, nowStatus);
+}
+
+void printLevelUp() {
+    textcolor(BLACK, WHITE);
+    empty_box(42, 18, 78, 32);
+    draw_boxB(42, 18, 78, 32);
+    gotoxy(50, 20);
+    printscr("Î†àÎ≤®ÏóÖÏùÑ Ï∂ïÌïòÌï©ÎãàÎã§!");
+    gotoxy(48, 23);
+    printscr("HP: %3d->%3d  MP: %3d->%3d",  exPlayer.hp, player.hp, exPlayer.mp, player.mp);
+    gotoxy(48, 24);
+    printscr("ATK: %2d->%2d  DEF: %2d->%2d", exPlayer.atk, player.atk, exPlayer.def, player.def);
+    gotoxy(49, 27);
+    printscr("<ENTER>Î•º ÎàåÎü¨ Ïû¨Í∞úÌïòÍ∏∞.");
+    textcolor(BLACK, GRAY1);
+    keyMode = LEVELUP;
+
+}
+
+void printGameClear() {
+    textcolor(BLACK, WHITE);
+    empty_box(42, 18, 78, 32);
+    draw_boxB(42, 18, 78, 32);
+    gotoxy(50, 20);
+    printscr("Í≤åÏûÑÏùÑ ÌÅ¥Î¶¨Ïñ¥ÌñàÏäµÎãàÎã§!");
+    gotoxy(48, 23);
+    printscr("TURN: %d  KillCount: %d", turn, killCount);
+    gotoxy(48, 24);
+    printscr("GOLD: %d LEVEL: %d", player.gold, player.level);
+    gotoxy(49, 27);
+    printscr("<ENTER>Î•º ÎàåÎü¨ Ï¢ÖÎ£åÌïòÍ∏∞.");
+    textcolor(BLACK, GRAY1);
+    keyMode = GAMECLEAR;
+
 }
 
 
@@ -249,7 +496,7 @@ void printMenuItemSimple(int x, int y, int color, char* text){
     printscr("%s", text);
 }
 
-char* mapMakeMenu[4] = { "   µ—∑Ø∫∏±‚   ", "   Ω√µÂ∫Ø∞Ê   ", "   ∏   »Æ¡§   ", "   µ⁄∑Œ∞°±‚   "};
+char* mapMakeMenu[4] = { "   ÎëòÎü¨Î≥¥Í∏∞   ", "   ÏãúÎìúÎ≥ÄÍ≤Ω   ", "   Îßµ  ÌôïÏ†ï   ", "   Îí§Î°úÍ∞ÄÍ∏∞   "};
 void printMapMakeMenu(int nowIndx){
     for(int i = 0; i < 4; i++)
     {
@@ -266,19 +513,19 @@ void printMakeMapPage(int nowIndx){
     draw_boxB(6, 3, 114, 45);
     draw_boxL(8, 4, 112, 8);
     gotoxy(57, 6);
-    printscr("∏  ª˝ º∫");
+    printscr("Îßµ ÏÉù ÏÑ±");
     draw_boxL(90, 5, 110, 7);
     gotoxy(92, 6);
     srand(time(NULL));
     int seed = rand() % 10000;
-    printscr("Ω√µÂ: %d", seed);
+    printscr("ÏãúÎìú: %d", seed);
     draw_boxL(8, 9, 112, 40);
     draw_boxL(8, 41, 112, 43);
     printMapMakeMenu(nowIndx);
     generateDungeon(seed);
     printMapStr(0);
     //112 - 8 = 104 / 4 = 26
-    //∏  µ—∑Ø∫∏±‚ | Ω√µÂ ∫Ø∞Ê | ∏  »Æ¡§ | µ⁄∑Œ∞°±‚
+    //Îßµ ÎëòÎü¨Î≥¥Í∏∞ | ÏãúÎìú Î≥ÄÍ≤Ω | Îßµ ÌôïÏ†ï | Îí§Î°úÍ∞ÄÍ∏∞
 }
 
 
@@ -309,61 +556,80 @@ void printFirstMenu(int nowIndx)
     }
     textcolor(WHITE, BLACK);
 }
-//ø©±‚ø°º≠∫Œ≈Õ ∞‘¿” ∫ª∆Ì
+//Ïó¨Í∏∞ÏóêÏÑúÎ∂ÄÌÑ∞ Í≤åÏûÑ Î≥∏Ìé∏
 
 void printPlayerMapSight() {
     int startX;
     int size;
-    int color;
-    for (int i = 0; i < 11; i++)
-    {
+    int color1, color2;
+    float transparency; // Ìà¨Î™ÖÎèÑ Î≥ÄÏàò Ï∂îÍ∞Ä
+    for (int i = 0; i < 11; i++) {
         startX = playerViewSight.startX[i];
         size = playerViewSight.size[i];
-        if (playerViewSight.mapSight[i][1] < 0 || playerViewSight.mapSight[i][1] >= MAP_SIZE)
-        {
+        if (playerViewSight.mapSight[i][1] < 0 || playerViewSight.mapSight[i][1] >= MAP_SIZE) {
             for (int l = 0; l < size; l++)
-                printMapBlock(startX + l, i, 0, BLACK);
-        }
-        else
-        {
-            for (int j = 0; j < size; j++)
-            {
-                if (playerViewSight.mapSight[i][0] < 0)
-                {
+                printMapBlock(startX + l, i, 0, BLACK, GRAY2); // ÏãúÏïº Î∞ñÏùò Î∏îÎ°ùÏùÄ ÏôÑÏ†Ñ Ìà¨Î™ÖÌïòÍ≤å ÏÑ§Ï†ï
+        } else {
+            for (int j = 0; j < size; j++) {
+                if (playerViewSight.mapSight[i][0] + j < 0) {
                     for (int l = 0; l < -playerViewSight.mapSight[i][0]; l++)
-                        printMapBlock(startX + l, i, 0, BLACK);
+                        printMapBlock(startX + l, i, 0, BLACK, GRAY2); // ÏãúÏïº Î∞ñÏùò Î∏îÎ°ùÏùÄ ÏôÑÏ†Ñ Ìà¨Î™ÖÌïòÍ≤å ÏÑ§Ï†ï
                     j -= playerViewSight.mapSight[i][0];
-                }
-                else if (playerViewSight.mapSight[i][0] + j > MAP_SIZE)
-                {
+                } else if (playerViewSight.mapSight[i][0] + j > MAP_SIZE) {
                     for (int l = j; l < size; l++)
-                        printMapBlock(startX + l, i, 0, BLACK);
+                        printMapBlock(startX + l, i, 0, BLACK, GRAY2); // ÏãúÏïº Î∞ñÏùò Î∏îÎ°ùÏùÄ ÏôÑÏ†Ñ Ìà¨Î™ÖÌïòÍ≤å ÏÑ§Ï†ï
                     break;
                 }
-                switch (map[playerViewSight.mapSight[i][0] + j][playerViewSight.mapSight[i][1]])
-                {
-                case EMPTY_SPACE:
-                    color = BLACK;
-                    break;
-                case ROOM:
-                    color = GRAY2;
-                    break;
-                default:
-                    color = BLACK;
+                // Í±∞Î¶¨Ïóê Îî∞Î•∏ Ìà¨Î™ÖÎèÑ Í≥ÑÏÇ∞
+                //Ï§ëÏïôÏùÄ (i = 5,j = 0)Ïóê ÏûàÏùå
+                //Ï§ëÏïôÍ≥ºÏùò Í±∞Î¶¨Î•º Í≥ÑÏÇ∞
+                switch (map[playerViewSight.mapSight[i][0] + j][playerViewSight.mapSight[i][1]]) {
+                    case EMPTY_SPACE:
+                        color1 = BLACK;
+                        color2 = GRAY2;
+                        break;
+                    case ROOM:
+                        if(zLayer[playerViewSight.mapSight[i][0] + j][playerViewSight.mapSight[i][1]].isAttackArea == 1)
+                        {
+                            color1 = MAGENTA2;
+                            color2 = MAGENTA2;
+                        }
+                        else
+                        {
+                            color2 = GRAY1;
+                            color1 = GRAY1;
+                        }
+                        
+                        
+                        break;
+                    default:
+                        color1 = BLACK;
+                        color2 = GRAY2;
                 }
-                printMapBlock(startX + j, i, 0, color);
+                printMapBlock(startX + j, i, 0, color1, color2); // Ìà¨Î™ÖÎèÑÎ•º Ï†ÅÏö©ÌïòÏó¨ Î∏îÎ°ù Ï∂úÎ†•
             }
         }
-        
     }
-    
 }
+
+objectType* bossArray[10];
+int bossArraySize = 0;
+objectType* eliteArray[20];
+int eliteArraySize = 0;
+objectType* monsterArray[100];
+int monsterArraySize = 0;
+
 void printPlayerzLayerSight() {
+    bossArraySize = 0;
+    eliteArraySize = 0;
+    monsterArraySize = 0;
     int startX;
     int size;
     int color;
     int addX, addY;
     int mapSightX, mapSightY;
+    mobDetailType* mobDetail;
+    
     for (int i = 0; i < 11; i++)
     {
         startX = playerViewSight.startX[i];
@@ -376,11 +642,11 @@ void printPlayerzLayerSight() {
         for (int j = 0; j < size; j++)
         {
             mapSightX = playerViewSight.mapSight[i][0];
-            if(mapSightX < 0)
+            if(mapSightX + j < 0)
             {
                 j -= mapSightX;
             }
-            else if(mapSightX > MAP_SIZE)
+            else if(mapSightX + j > MAP_SIZE)
             {
                 break;
             }
@@ -389,13 +655,33 @@ void printPlayerzLayerSight() {
                 switch (zLayer[mapSightX + j][mapSightY].type)
                 {
                 case objMONSTER:
-                    color = RED1;
+                    if (zLayer[mapSightX + j][mapSightY].object == NULL)
+                        continue;
+                    zLayer[mapSightX + j][mapSightY].object->isMoved = 0;
+                    monsterArray[monsterArraySize++] = zLayer[mapSightX + j][mapSightY].object;
+                    mobDetail = &zLayer[mapSightX + j][mapSightY].object->mobDetail;
+                    if(zLayer[mapSightX + j][mapSightY].isAttackArea == 1)
+                        color = MAGENTA1;
+                    else
+                        color = RED2;
                     break;
                 case objBOSS:
-                    color = RED2;
+                    zLayer[mapSightX + j][mapSightY].object->isMoved = 0;
+                    bossArray[bossArraySize++] = zLayer[mapSightX + j][mapSightY].object;
+                    mobDetail = &zLayer[mapSightX + j][mapSightY].object->mobDetail;
+                    if(zLayer[mapSightX + j][mapSightY].isAttackArea == 1)
+                        color = MAGENTA1;
+                    else
+                        color = RED1;
                     break;
                 case objELITE:
-                    color = YELLOW1;
+                    zLayer[mapSightX + j][mapSightY].object->isMoved = 0;
+                    eliteArray[eliteArraySize++] = zLayer[mapSightX + j][mapSightY].object;
+                    mobDetail = &zLayer[mapSightX + j][mapSightY].object->mobDetail;
+                    if(zLayer[mapSightX + j][mapSightY].isAttackArea == 1)
+                        color = MAGENTA1;
+                    else
+                        color = YELLOW1;
                     break;
                 case objTREASURE:
                     color = YELLOW2;
@@ -407,11 +693,20 @@ void printPlayerzLayerSight() {
                     color = GREEN1;
                     break;
                 default:
-                    color = BLACK;
+                    color = GRAY2;
                     break;
                 }
-                printMapBlock(startX + j, i, 1, color);
+                if(zLayer[mapSightX + j][mapSightY].type <= objELITE)
+                {
+                    printObjBlock(startX + j, i, &mobDetail->mobName, mobDetail->mobIndx, color, WHITE);
+                }
+                else
+                {
+                    printMapBlock(startX + j, i, 0, color, WHITE);
+                }
             }
         }
     }
+    printMapBlock(0, 5, 1, CYAN1, WHITE);
+    printMobList();
 }

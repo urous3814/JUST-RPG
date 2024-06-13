@@ -2,6 +2,15 @@
 
 
 int roomCount = 0;
+int mobIndx[6] = {1, 1, 1, 1, 1, 1};
+
+objectType* bossArray[10];
+int bossArraySize;
+objectType* eliteArray[20];
+int eliteArraySize;
+objectType* monsterArray[100];
+int monsterArraySize;
+
 
 void initializeDungeon() {
     for (int i = 0; i < MAP_SIZE; ++i) {
@@ -56,8 +65,8 @@ void drawRoom(roomType room) {
         }
     }
 }
-
-
+char* mobTypeChar[6] =  {"유", "슬", "고", "오", "트", "드"};
+char* mobNameKor[6] = {"유령", "슬라임", "고블린", "오크", "트롤", "드래곤"};
 
 objectType* makeMonsterObject(enum monEnum monType)
 {   
@@ -67,31 +76,46 @@ objectType* makeMonsterObject(enum monEnum monType)
     case NormalM:
         monster->objectTypeEnum = objMONSTER;
         monster->level = randint(1, 3);
-        monster->hp = randint(10, 15) * monster->level;
+        monster->maxHp = randint(10, 15) * monster->level;
+        monster->mobDetail.hp = monster->maxHp;
+        monster->mobDetail.magicLen = -1;
+        monster->mobDetail.magic = None;
         monster->atk = randint(1, 2) * monster->level;
         monster->def = randint(1, 2) * monster->level;
         monster->gold = randint(1, 3) * monster->level;
         monster->exp = randint(1, 3) * monster->level;
         monster->item = NULL;
+        monster->mobDetail.mobType = randint(Goust, Goblin);
+        monster->mobDetail.mobIndx = mobIndx[monster->mobDetail.mobType]++;
+        strcpy(monster->mobDetail.mobName, mobTypeChar[monster->mobDetail.mobType]);
+
         break;
     case EliteM:
         monster->objectTypeEnum = objELITE;
         monster->level = randint(3, 5);
-        monster->hp = randint(15, 20) * monster->level;
+        monster->maxHp = randint(15, 20) * monster->level;
+        monster->mobDetail.hp = monster->maxHp;
         monster->atk = randint(1, 2) * monster->level;
         monster->def = randint(1, 2) * monster->level;
         monster->gold = randint(1, 3) * monster->level;
         monster->exp = randint(1, 3) * monster->level;
+        monster->mobDetail.mobType = randint(Orc, Troll);
+        monster->mobDetail.mobIndx = mobIndx[monster->mobDetail.mobType];
+        strcpy(monster->mobDetail.mobName, mobTypeChar[monster->mobDetail.mobType]);
         monster->item = NULL;
         break;
     case BossM:
         monster->objectTypeEnum = objBOSS;
         monster->level = randint(10, 15);
-        monster->hp = randint(15, 20) * monster->level;
+        monster->maxHp = randint(15, 20) * monster->level;
+        monster->mobDetail.hp = monster->maxHp;
         monster->atk = randint(3, 5) * monster->level;
         monster->def = randint(3, 5) * monster->level;
         monster->gold = randint(3, 5) * monster->level;
         monster->exp = randint(10, 20) * monster->level;
+        monster->mobDetail.mobType = Dragon;
+        monster->mobDetail.mobIndx = mobIndx[monster->mobDetail.mobType];
+        strcpy(monster->mobDetail.mobName, mobTypeChar[monster->mobDetail.mobType]);
         monster->item = NULL;
         break;
 
@@ -105,8 +129,8 @@ void addMonsterObject(roomType room) {
     //난이도 가져오기
     int mobCount = randint(4, 4 + 3 * difficulty);
     for (int i = 0; i < mobCount; i++) {
-        int x = randint(room.x, room.x + room.width);
-        int y = randint(room.y, room.y + room.height);
+        int x = randint(room.x+1, room.x + room.width-1);
+        int y = randint(room.y+1, room.y + room.height-1);
         zLayer[x][y].type = objMONSTER;
         zLayer[x][y].object = makeMonsterObject(0);
     }
@@ -117,7 +141,7 @@ objectType* makeTreasureObject()
     objectType* treasure = (objectType*)malloc(sizeof(objectType));
     treasure->objectTypeEnum = objTREASURE;
     treasure->level = randint(1, 3);
-    treasure->hp = 0;
+    treasure->maxHp = 0;
     treasure->atk = 0;
     treasure->def = 0;
     treasure->gold = randint(5, 10) * treasure->level;
@@ -131,7 +155,7 @@ objectType* makeMimicObject()
     objectType* treasure = (objectType*)malloc(sizeof(objectType));
     treasure->objectTypeEnum = objTREASURE;
     treasure->level = randint(1, 3);
-    treasure->hp = 0;
+    treasure->maxHp = 0;
     treasure->atk = randint(3, 6) * treasure->level;
     treasure->def = 0;
     treasure->gold = 0;
@@ -144,14 +168,13 @@ objectType* makeMimicObject()
 //방에 있는 요소들을 추가한다
 void addRoomObject(roomType room) {
     //몹 추가하기
+    
     addMonsterObject(room);
-
     //유형별 특별 오브젝트 추가하기
     switch (room.type)
     {
     case PlayerSpawn:
-        //initPlayer(room.x + room.width / 2, room.y + room.height / 2);
-        initPlayer(1, 1);
+        initPlayer(room.x + room.width / 2, room.y + room.height / 2);
         break;
     case Treasure:
         zLayer[room.x + room.width / 2][room.y + room.height / 2].type = objTREASURE;
@@ -179,6 +202,7 @@ void mapComplete()
     for (int i = 0; i < MAP_SIZE; i++) {
         for (int j = 0; j < MAP_SIZE; j++) {
             zLayer[i][j].type = -1;
+            zLayer[i][j].isAttackArea = 0;
         }
     }
     //1단계 플레이어 배치
